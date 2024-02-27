@@ -1,7 +1,9 @@
 import time
+from time import sleep
 
 import requests
 
+from inventory.item import Item
 from pantry_soft.driver import PantrySoftDriver
 
 
@@ -129,3 +131,9 @@ class PantrySoft:
     def get_all_item_tags_json(self) -> dict:
         """Return the JSON response from the PantrySoft API."""
         return self.get_json("inventoryitemtag", "indexdata")
+
+    def add_item(self, item: Item) -> None:
+        """Add an item to the PantrySoft inventory."""
+        self.driver.add_item(item)
+        sleep(1)
+        self.driver.link_code_to_item(item)

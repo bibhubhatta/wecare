@@ -2,22 +2,41 @@ from inventory.item import Item
 from pantry_soft.api import PantrySoftApi
 
 
-def test_api_gets_item():
-    test_item = Item(
-        upc="044000882105",
-        name="RITZ Peanut Butter Sandwich Crackers, 8 - 1.38 oz Snack Packs",
-        category="Food",
-        unit="Ounces",
-        size=11.04,
-        description=""
-    )
-
+class TestPantrySoftApi:
     api = PantrySoftApi()
-    returned_item = api.read_item(test_item.upc)
 
-    assert test_item.upc == returned_item.upc
-    assert test_item.name == returned_item.name
-    assert test_item.category == returned_item.category
-    assert test_item.unit == returned_item.unit
-    assert test_item.size == returned_item.size
-    assert test_item.description == returned_item.description
+    def test_api_gets_item(self):
+        test_item = Item(
+            upc="044000882105",
+            name="RITZ Peanut Butter Sandwich Crackers, 8 - 1.38 oz Snack Packs",
+            category="",  # Category is not implemented yet
+            unit="",  # Unit is not implemented yet
+            size=11.04,
+            description="",  # description blank because adding description is not yet implemented
+        )
+
+        self.api.create_item(test_item)
+
+        returned_item = self.api.read_item(test_item.upc)
+
+        assert returned_item.upc == test_item.upc
+        assert returned_item.name == test_item.name
+        assert returned_item.size == test_item.size
+
+    def test_api_creates_item(self):
+        test_item = Item(
+            upc="070275000012",
+            name="Whink Rust Stain Remover, 16 fl oz",
+            category="",  # Category is not implemented yet
+            unit="",  # Unit is not implemented yet
+            size=16.0,
+            description="lol",  # description blank because adding description is not yet implemented
+        )
+
+        self.api.create_item(test_item)
+
+        returned_item = self.api.read_item(test_item.upc)
+
+        assert returned_item.upc == test_item.upc
+        assert returned_item.name == test_item.name
+        assert returned_item.size == test_item.size

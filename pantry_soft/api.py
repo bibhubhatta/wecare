@@ -1,6 +1,10 @@
 from inventory.item import Item
 from inventory.pantry import PantryApi
-from pantry_soft.credentials import PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD
+from pantry_soft.credentials import (
+    PANTRYSOFT_URL,
+    PANTRYSOFT_USERNAME,
+    PANTRYSOFT_PASSWORD,
+)
 from pantry_soft.pantrysoft import PantrySoft
 
 
@@ -9,7 +13,9 @@ class PantrySoftApi(PantryApi):
 
     def __init__(self):
         """Initialize a PantrySoftApi object."""
-        self.__pantry_soft = PantrySoft(PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD)
+        self.__pantry_soft = PantrySoft(
+            PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD
+        )
 
     def read_item(self, upc: str) -> Item:
         """
@@ -35,7 +41,7 @@ class PantrySoftApi(PantryApi):
                             category=item["itemTypeString"],
                             unit=item["unit"],
                             size=float(item["weight"]),
-                            description=""  # description is not available directly from the json response
+                            description="",  # description is not available directly from the json response
                         )
 
         raise ValueError(f"Item with UPC {upc} not found in the pantry")
@@ -47,7 +53,11 @@ class PantrySoftApi(PantryApi):
         Parameters:
         - item (Item): The item to set in the pantry.
         """
-        raise NotImplementedError("PantrySoft API does not support creating items")
+        try:
+            self.read_item(item.upc)
+            raise ValueError(f"Item with UPC {item.upc} already exists in the pantry")
+        except ValueError:
+            self.__pantry_soft.add_item(item)
 
     def update_item(self, item: Item) -> None:
         """
