@@ -2,6 +2,7 @@ import time
 from time import sleep
 
 import requests
+from bs4 import BeautifulSoup
 
 from inventory.item import Item
 from pantry_soft.driver import PantrySoftDriver
@@ -137,3 +138,51 @@ class PantrySoft:
         self.driver.add_item(item)
         sleep(1)
         self.driver.link_code_to_item(item)
+
+    def delete_item(self, item_id: int) -> None:
+        """Delete an item from the PantrySoft inventory."""
+
+        cookies = {
+            "PHPSESSID": self.php_session,
+        }
+
+        headers = {
+            "authority": "app.pantrysoft.com",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "max-age=0",
+            "content-type": "application/x-www-form-urlencoded",
+            "origin": "https://app.pantrysoft.com",
+            "referer": "https://app.pantrysoft.com/inventoryitem/",
+            "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        }
+
+        response = requests.get(
+            "https://app.pantrysoft.com/inventoryitem/",
+            cookies=cookies,
+            headers=headers,
+        )
+
+        response_html = response.text
+        soup = BeautifulSoup(response_html, "html.parser")
+        csrf_token = soup.find("generic-delete-modal").get("csrf-token")
+
+        data = {
+            "_method": "DELETE",
+            "csrfToken": csrf_token,
+        }
+
+        requests.post(
+            f"https://app.pantrysoft.com/inventoryitem/delete/{item_id}",
+            cookies=cookies,
+            headers=headers,
+            data=data,
+        )

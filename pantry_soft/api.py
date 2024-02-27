@@ -75,4 +75,14 @@ class PantrySoftApi(PantryApi):
         Parameters:
         - upc (str): The Universal Product Code of the item to delete.
         """
-        raise NotImplementedError("PantrySoft API does not support deleting items")
+        inventory_codes_json = self.__pantry_soft.get_all_inventory_codes_json()
+        inventory_items_json = self.__pantry_soft.get_all_items_json()
+
+        for item_code_data in inventory_codes_json["data"]:
+            if item_code_data["codeNumber"] == upc:
+                for item in inventory_items_json["data"]:
+                    if item["id"] == item_code_data["itemId"]:
+                        self.__pantry_soft.delete_item(item["id"])
+                        return
+
+        raise ValueError(f"Item with UPC {upc} not found in the pantry")
