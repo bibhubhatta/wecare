@@ -47,11 +47,79 @@ class PantrySoft:
         return response.json()
 
     def get_all_items_json(self) -> dict:
-        """Return the JSON response from the PantrySoft API."""
+        """Return the JSON response from the PantrySoft API.
+
+        Sample response:
+        {
+            "data": [
+                {
+                    "id": 1,
+                    "itemNumber": "1",
+                    "name": "French Cut Green Beans 14.25oz",
+                    "unit": "Can",
+                    "value": "0.00",
+                    "weight": "0.00",
+                    "creditPrice": null,
+                    "isActive": true,
+                    "sortOrder": 0,
+                    "itemTypeString": "Canned Vegetables",
+                    "inventoryItemTags": null
+                },
+                {
+                    "id": 798,
+                    "itemNumber": "044000882105",
+                    "name": "RITZ Peanut Butter Sandwich Crackers, 8 - 1.38 oz Snack Packs",
+                    "unit": "Ounces",
+                    "value": "0.00",
+                    "weight": "11.04",
+                    "creditPrice": "0.00",
+                    "isActive": true,
+                    "sortOrder": 780,
+                    "itemTypeString": "Food",
+                    "inventoryItemTags": null
+                }
+            ]
+        }
+
+
+        """
         return self.get_json("inventoryitem", "indexdata")
 
     def get_all_inventory_codes_json(self) -> dict:
-        """Return the JSON response from the PantrySoft API."""
+        """Return the JSON response from the PantrySoft API.
+
+        Sample response:
+        {
+            "message": "success",
+            "data": [
+                {
+                    "itemName": "Bananas",
+                    "itemId": 2,
+                    "codeId": 6,
+                    "codeNumber": "012",
+                    "codeDescription": null,
+                    "itemNumber": "2"
+                },
+                {
+                    "itemName": "Mixed Nuts",
+                    "itemId": 784,
+                    "codeId": 1,
+                    "codeNumber": "076811000140",
+                    "codeDescription": null,
+                    "itemNumber": "076811000140"
+                },
+                {
+                    "itemName": "RITZ Peanut Butter Sandwich Crackers, 8 - 1.38 oz Snack Packs",
+                    "itemId": 798,
+                    "codeId": 7,
+                    "codeNumber": "044000882105",
+                    "codeDescription": null,
+                    "itemNumber": "044000882105"
+                }
+            ]
+        }
+
+        """
         return self.get_json("inventory_code", "indexData")
 
     def get_all_item_types_json(self) -> dict:
