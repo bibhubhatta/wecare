@@ -18,12 +18,20 @@ class CommandLineInterface:
 
     @staticmethod
     def get_item_from_input(upc: str) -> Item:
+        print("\n")
         name = input(f"Enter name for {upc}: ")
-        category = ""  # Skipping category because it is not implemented yet
-        unit = ""  # Skipping unit because it is not implemented yet
         size = float(input(f"Enter size for {upc}: "))
-        description = ""  # Skipping description because it is not implemented yet
+        # Skipping category, unit, and description because they are not implemented yet
+        category = ""
+        unit = ""
+        description = ""
+        print("\n")
+
         return Item(upc, name, category, unit, size, description)
+
+    @staticmethod
+    def print_item(item: Item):
+        print(f"Item: {item.name}\n")
 
     def run(self):
         while True:
@@ -34,22 +42,24 @@ class CommandLineInterface:
 
             if self.item_in_pantry(upc):
                 item = self.pantry_soft.read_item(upc)
-                print(f"{item.name} found in PantrySoft. Skipping...")
+                self.print_item(item)
+                print("Item found in PantrySoft. Skipping...\n\n")
                 continue
             else:
                 print("Item not in PantrySoft. Adding...")
 
             try:
                 item = self.shoprite.get(upc)
-                print(f"Item: {item.name} found in Shoprite")
+                self.print_item(item)
+                print("Item found in Shoprite.")
             except Exception as e:
                 print(f"Item not found in Shoprite. Please add details for {upc}")
                 item = self.get_item_from_input(upc)
 
-            print(f"Creating {item.name} in PantrySoft")
+            print("Creating item in PantrySoft...")
             self.pantry_soft.create_item(item)
 
-            print(f"Item {item.name} added to PantrySoft\n\n")
+            print("Item added to PantrySoft\n\n")
 
 
 def main():
