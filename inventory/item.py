@@ -4,7 +4,15 @@ from abc import ABC, abstractmethod
 class Item:
     """Class representing an item."""
 
-    def __init__(self, upc: str, name: str, category: str, unit: str, size: float, description: str):
+    def __init__(
+        self,
+        upc: str,
+        name: str,
+        category: str,
+        unit: str,
+        size: float,
+        description: str,
+    ):
         """
         Initialize an Item object.
 

@@ -11,7 +11,9 @@ class ShopriteItemApi(ItemApi):
     def __init__(self):
         """Initialize a ShopriteItemApi object."""
         headers = {"x-site-host": "https://www.shoprite.com"}
-        self.endpoint = "https://storefrontgateway.brands.wakefern.com/api/stores/3000/products/"
+        self.endpoint = (
+            "https://storefrontgateway.brands.wakefern.com/api/stores/3000/products/"
+        )
         self.client = requests.Session()
         self.client.headers.update(headers)
 

@@ -9,7 +9,7 @@ def test_gets_item():
         category="Surface Cleaners",
         unit="Ounce",
         size=16.0,
-        description="Whink Rust Stain Remover, 16 fl oz"
+        description="Whink Rust Stain Remover, 16 fl oz",
     )
 
     api = ShopriteItemApi()
