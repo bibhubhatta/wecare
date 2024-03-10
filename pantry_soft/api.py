@@ -45,7 +45,6 @@ class PantrySoftApi(PantryApi):
         """
         try:
             self.read_item(item.upc)
-            raise ValueError(f"Item with UPC {item.upc} already exists in the pantry")
         except ValueError:
             self.__pantry_soft.add_item(
                 item_number=item.upc,
@@ -53,6 +52,9 @@ class PantrySoftApi(PantryApi):
                 size=item.size,
                 description=item.description,
             )
+            return
+
+        raise ValueError(f"Item with UPC {item.upc} already exists in the pantry")
 
     def update_item(self, item: Item) -> None:
         """

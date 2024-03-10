@@ -66,3 +66,18 @@ class TestPantrySoftApi:
 
         with pytest.raises(ValueError):
             self.api.read_item(test_item.upc)
+
+    def test_api_duplicate_item(self):
+        test_item = Item(
+            upc="000000000000",
+            name="One Piece",
+            category="",  # Category is not implemented yet
+            unit="",  # Unit is not implemented yet
+            size=1.11111,
+            description="lol",  # description blank because adding description is not yet implemented
+        )
+
+        self.api.create_item(test_item)
+        with pytest.raises(ValueError):
+            self.api.create_item(test_item)
+        self.api.delete_item(test_item.upc)
