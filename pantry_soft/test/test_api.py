@@ -2,10 +2,15 @@ import pytest
 
 from inventory.item import Item
 from pantry_soft.api import PantrySoftApi
+from pantry_soft.credentials import (
+    PANTRYSOFT_URL,
+    PANTRYSOFT_USERNAME,
+    PANTRYSOFT_PASSWORD,
+)
 
 
 class TestPantrySoftApi:
-    api = PantrySoftApi()
+    api = PantrySoftApi(PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD)
 
     def test_api_gets_item(self):
         test_item = Item(

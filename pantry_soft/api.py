@@ -1,21 +1,15 @@
 from inventory.item import Item
 from inventory.pantry import PantryApi
-from pantry_soft.credentials import (
-    PANTRYSOFT_URL,
-    PANTRYSOFT_USERNAME,
-    PANTRYSOFT_PASSWORD,
-)
+
 from pantry_soft.pantrysoft import PantrySoft
 
 
 class PantrySoftApi(PantryApi):
     """PantrySoft API for interacting with the pantry."""
 
-    def __init__(self):
+    def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoftApi object."""
-        self.__pantry_soft = PantrySoft(
-            PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD
-        )
+        self.__pantry_soft = PantrySoft(url, username, password)
 
     def read_item(self, upc: str) -> Item:
         """
