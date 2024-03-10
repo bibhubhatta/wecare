@@ -1,4 +1,8 @@
-from credentials import PANTRYSOFT_URL, PANTRYSOFT_USERNAME, PANTRYSOFT_PASSWORD
+from pantry_soft.credentials import (
+    PANTRYSOFT_URL,
+    PANTRYSOFT_USERNAME,
+    PANTRYSOFT_PASSWORD,
+)
 from pantry_soft.pantrysoft import PantrySoft
 
 
