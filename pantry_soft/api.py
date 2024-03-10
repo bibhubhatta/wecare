@@ -90,7 +90,20 @@ class PantrySoftApi(PantryApi):
         Parameters:
         - item (Item): The item to update in the pantry.
         """
-        raise NotImplementedError("PantrySoft API does not support updating items")
+        if item.category == "":
+            raise ValueError("Item category cannot be empty")
+
+        try:
+            pantry_soft_item = self.__pantry_soft.get_item(item.upc)
+            self.__pantry_soft.update_item(
+                pantry_soft_item,
+                name=item.name,
+                size=item.size,
+                description=item.description,
+                item_type=item.category,
+            )
+        except ValueError:
+            raise ValueError(f"Item with UPC {item.upc} not found in the pantry")
 
     def delete_item(self, upc: str) -> None:
         """

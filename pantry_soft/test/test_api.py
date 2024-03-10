@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 from inventory.item import Item
@@ -16,7 +18,7 @@ class TestPantrySoftApi:
         name="One Piece",
         category="Anime",
         unit="",  # Unit is not implemented yet
-        size=1.11111,
+        size=1.11,
         description="",  # description blank because adding description is not yet implemented
     )
 
@@ -59,6 +61,23 @@ class TestPantrySoftApi:
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
         assert returned_item.category == test_item.category
+
+    def test_api_updates_item(self):
+        test_item = self.one_piece
+
+        self.api.create_item(test_item)
+        updated_item = copy.deepcopy(test_item)
+        updated_item.name = "Two Piece"
+
+        self.api.update_item(updated_item)
+        returned_item = self.api.read_item(test_item.upc)
+        self.api.delete_item(test_item.upc)
+        self.api.delete_item_category(test_item.category)
+
+        assert returned_item.upc == updated_item.upc
+        assert returned_item.name == updated_item.name
+        assert returned_item.size == updated_item.size
+        assert returned_item.category == updated_item.category
 
     def test_api_deletes_item(self):
         test_item = self.one_piece

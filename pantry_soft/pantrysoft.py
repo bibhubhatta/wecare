@@ -186,6 +186,58 @@ class PantrySoft:
         """Get the PantrySoft item ID with the given item number."""
         return self.get_item(item_number)["id"]
 
+    def update_item(
+        self, item: dict, name: str, item_type: str, size: float, description: str
+    ) -> None:
+        """Update an item in the PantrySoft inventory."""
+        # Check if item type exists
+        try:
+            item_type_id = self.get_item_type_id(item_type)
+        except ValueError:
+            self.create_item_type(item_type)
+            item_type_id = self.get_item_type_id(item_type)
+
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitem/{item['id']}/edit",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
+        soup = BeautifulSoup(response.text, "html.parser")
+        form_token = soup.find(
+            "input", {"id": "pantrybundle_inventoryitem__token"}
+        ).get("value")
+
+        # Send the update request
+        data = {
+            "pantrybundle_inventoryitem[name]": name,
+            "pantrybundle_inventoryitem[itemNumber]": item["itemNumber"],
+            "pantrybundle_inventoryitem[inventoryItemType]": str(item_type_id),
+            "pantrybundle_inventoryitem[unit]": "Ounces",
+            "pantrybundle_inventoryitem[value]": "0.00",
+            "pantrybundle_inventoryitem[weight]": str(size),
+            "pantrybundle_inventoryitem[outOfStockThreshold]": "0.00",
+            "pantrybundle_inventoryitem[isActive]": "1",
+            "pantrybundle_inventoryitem[isVisit]": "1",
+            "pantrybundle_inventoryitem[isKiosk]": "1",
+            "pantrybundle_inventoryitem[isStore]": "1",
+            "pantrybundle_inventoryitem[backgroundColor]": "",
+            "pantrybundle_inventoryitem[symbolType]": "",
+            "fileupload": "",
+            "pantrybundle_inventoryitem[description]": description,
+            "pantrybundle_inventoryitem[icon]": "",
+            "pantrybundle_inventoryitem[imageUploadId]": "",
+            "pantrybundle_inventoryitem[_token]": form_token,
+        }
+        requests.post(
+            f"{self.url}/inventoryitem/{item['id']}/edit",
+            headers=self._headers,
+            cookies=self._cookies,
+            data=data,
+        )
+
+        self.last_item_changed = time.time()
+
     def _link_code_to_item(self, item_number: str, name: str, code_number: str) -> None:
         """Links item code to item in the PantrySoft inventory."""
 
