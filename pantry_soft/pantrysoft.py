@@ -14,8 +14,13 @@ class PantrySoft:
     def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoft object."""
         self.url = url
-        self.driver = PantrySoftDriver(url, username, password)
-        self.php_session = self.driver.get_php_session()
+        self.php_session = self.get_php_session(username, password)
+
+    def get_php_session(self, username: str, password: str) -> str:
+        driver = PantrySoftDriver(self.url, username, password)
+        php_session = driver.get_php_session()
+        driver.driver.quit()
+        return php_session
 
     def _get_request_params(self) -> dict:
         """Generate common request parameters."""
