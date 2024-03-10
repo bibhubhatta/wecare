@@ -97,7 +97,7 @@ class PantrySoft:
         return self._get_json("inventoryitemtag")
 
     def add_item(
-            self, item_number: str, name: str, size: float, description: str
+        self, item_number: str, name: str, size: float, description: str
     ) -> None:
         """Create an item in the PantrySoft inventory and link item number as its code."""
         self._create_item(item_number, name, size, description)
@@ -106,7 +106,7 @@ class PantrySoft:
         )
 
     def _create_item(
-            self, item_number: str, name: str, weight: float, description: str
+        self, item_number: str, name: str, weight: float, description: str
     ) -> None:
         """Create an item in the PantrySoft inventory."""
 
@@ -161,7 +161,9 @@ class PantrySoft:
                 return item_id
 
         if not item_id:
-            raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
+            raise ValueError(
+                f"Item with item number {item_number} not found in PantrySoft"
+            )
 
     def _link_code_to_item(self, item_number: str, name: str, code_number: str) -> None:
         """Links item code to item in the PantrySoft inventory."""
@@ -170,7 +172,9 @@ class PantrySoft:
         try:
             item_id = self.get_item_id(item_number)
         except ValueError:
-            raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
+            raise ValueError(
+                f"Item with item number {item_number} not found in PantrySoft"
+            )
 
         # Get the CSRF token
         response = requests.get(
