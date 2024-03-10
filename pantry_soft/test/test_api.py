@@ -93,5 +93,5 @@ class TestPantrySoftApi:
         )
 
         self.api.create_item(test_item)
-        self.api.add_item_image(test_item.upc, "meat.jpg")
+        self.api.add_item_image(test_item.upc, open("meat.jpg", "rb").read())
         self.api.delete_item(test_item.upc)

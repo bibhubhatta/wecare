@@ -245,9 +245,12 @@ class PantrySoft:
 
         self.last_item_changed = time.time()
 
-    def upload_image(self, image_path: str) -> int:
+    def upload_image(self, image: bytes) -> int:
         """
         Upload an image to the PantrySoft item.
+
+        Parameters:
+        - image (bytes): The image file to upload. Must be a JPEG file.
 
         Returns:
         - int: The ID of the uploaded image.
@@ -256,8 +259,8 @@ class PantrySoft:
         files = {
             "context": (None, "inventoryItemImages"),
             "fileupload": (
-                image_path.split("/")[-1],
-                open(image_path, "rb"),
+                "image.jpg",
+                image,
                 "image/jpeg",
             ),
         }
@@ -275,7 +278,7 @@ class PantrySoft:
         except (JSONDecodeError, KeyError):
             raise ValueError("Failed to upload image to PantrySoft")
 
-    def add_item_image(self, item: dict, image_path: str) -> None:
+    def add_item_image(self, item: dict, image: bytes) -> None:
         """
         Add an image to the PantrySoft item.
 
@@ -302,7 +305,7 @@ class PantrySoft:
         headers["origin"] = self.url
         headers["referer"] = f"{self.url}/inventoryitem/{item['id']}/edit"
 
-        image_id = self.upload_image(image_path)
+        image_id = self.upload_image(image)
 
         data = {
             "pantrybundle_inventoryitem[name]": item["name"],
