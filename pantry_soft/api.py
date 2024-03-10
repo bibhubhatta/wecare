@@ -36,6 +36,28 @@ class PantrySoftApi(PantryApi):
         except ValueError:
             raise ValueError(f"Item with UPC {upc} not found in the pantry")
 
+    def read_all_items(self) -> list[Item]:
+        """
+        Retrieve all items from the pantry.
+
+        Returns:
+        list[Item]: The retrieved items.
+        """
+        pantry_soft_items = self.__pantry_soft.get_all_items_json()["data"]
+        items = []
+        for pantry_soft_item in pantry_soft_items:
+            items.append(
+                Item(
+                    pantry_soft_item["itemNumber"],
+                    name=pantry_soft_item["name"],
+                    category=pantry_soft_item["itemTypeString"],
+                    unit=pantry_soft_item["unit"],
+                    size=float(pantry_soft_item["weight"]),
+                    description="",  # description is not available directly from the json response
+                )
+            )
+        return items
+
     def create_item(self, item: Item) -> None:
         """
         Set an item in the pantry.
