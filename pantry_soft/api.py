@@ -77,3 +77,19 @@ class PantrySoftApi(PantryApi):
             self.__pantry_soft.delete_item(item_id)
         except ValueError:
             raise ValueError(f"Item with UPC {upc} not found in the pantry")
+
+    def add_item_image(self, upc: str, image_path: str) -> None:
+        """
+        Add image to an item in the pantry.
+        Existing image will be overwritten.
+
+        Parameters:
+        - upc (str): The Universal Product Code of the item to upload an image for.
+        - image_path (str): The path to the image file to upload.
+        """
+
+        try:
+            pantry_soft_item = self.__pantry_soft.get_item(upc)
+            self.__pantry_soft.add_item_image(pantry_soft_item, image_path)
+        except ValueError:
+            raise ValueError(f"Item with UPC {upc} not found in the pantry")

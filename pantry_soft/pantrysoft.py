@@ -244,3 +244,90 @@ class PantrySoft:
         )
 
         self.last_item_changed = time.time()
+
+    def upload_image(self, image_path: str) -> int:
+        """
+        Upload an image to the PantrySoft item.
+
+        Returns:
+        - int: The ID of the uploaded image.
+        """
+
+        files = {
+            "context": (None, "inventoryItemImages"),
+            "fileupload": (
+                image_path.split("/")[-1],
+                open(image_path, "rb"),
+                "image/jpeg",
+            ),
+        }
+
+        response = requests.post(
+            f"{self.url}/media/upload/image",
+            cookies=self._cookies,
+            headers=self._headers,
+            files=files,
+        )
+
+        try:
+            image_id = response.json()["media"]["id"]
+            return image_id
+        except (JSONDecodeError, KeyError):
+            raise ValueError("Failed to upload image to PantrySoft")
+
+    def add_item_image(self, item: dict, image_path: str) -> None:
+        """
+        Add an image to the PantrySoft item.
+
+        Parameters:
+        - item (dict): The PantrySoft item to add an image to.
+        - image_path (str): The path to the image file to upload.
+        """
+
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitem/{item['id']}/edit",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        form_token = soup.find(
+            "input", {"id": "pantrybundle_inventoryitem__token"}
+        ).get("value")
+
+        # Send the update request
+        headers = self._headers.copy()
+        headers["content-type"] = "application/x-www-form-urlencoded"
+        headers["origin"] = self.url
+        headers["referer"] = f"{self.url}/inventoryitem/{item['id']}/edit"
+
+        image_id = self.upload_image(image_path)
+
+        data = {
+            "pantrybundle_inventoryitem[name]": item["name"],
+            "pantrybundle_inventoryitem[itemNumber]": item["itemNumber"],
+            "pantrybundle_inventoryitem[inventoryItemType]": "1",
+            "pantrybundle_inventoryitem[unit]": "Ounces",
+            "pantrybundle_inventoryitem[value]": "0.00",
+            "pantrybundle_inventoryitem[weight]": str(item["weight"]),
+            "pantrybundle_inventoryitem[outOfStockThreshold]": "0.00",
+            "pantrybundle_inventoryitem[isActive]": "1",
+            "pantrybundle_inventoryitem[isVisit]": "1",
+            "pantrybundle_inventoryitem[isKiosk]": "1",
+            "pantrybundle_inventoryitem[isStore]": "1",
+            "pantrybundle_inventoryitem[backgroundColor]": "",
+            "pantrybundle_inventoryitem[symbolType]": "image",
+            "fileupload": "",
+            # "pantrybundle_inventoryitem[description]": item["description"],
+            "pantrybundle_inventoryitem[icon]": "",
+            "pantrybundle_inventoryitem[imageUploadId]": str(image_id),
+            "pantrybundle_inventoryitem[_token]": form_token,
+        }
+
+        requests.post(
+            f"{self.url}/inventoryitem/{item['id']}/edit",
+            cookies=self._cookies,
+            headers=headers,
+            data=data,
+        )
