@@ -13,6 +13,7 @@ class PantrySoft:
 
     def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoft object."""
+        self.url = url
         self.driver = PantrySoftDriver(url, username, password)
         self.php_session = self.driver.get_php_session()
 
@@ -38,7 +39,7 @@ class PantrySoft:
         params = self._get_request_params()
         params["params"] = {"_": str(int(time.time() * 1000))}
         response = requests.get(
-            f"https://app.pantrysoft.com/{endpoint}/{indexdata}", **params
+            f"{self.url}/{endpoint}/{indexdata}", **params
         )
         return response.json()
 
@@ -63,7 +64,7 @@ class PantrySoft:
 
         params = self._get_request_params()
         response = requests.get(
-            "https://app.pantrysoft.com/inventoryitem/new", **params
+            f"{self.url}/inventoryitem/new", **params
         )
         soup = BeautifulSoup(response.text, "html.parser")
         form_token = soup.find(
@@ -92,7 +93,7 @@ class PantrySoft:
         }
 
         requests.post(
-            "https://app.pantrysoft.com/inventoryitem/new",
+            f"{self.url}/inventoryitem/new",
             **params,
             data=data,
         )
@@ -108,7 +109,7 @@ class PantrySoft:
         csrf_token = soup.find("generic-delete-modal").get("csrf-token")
         data = {"_method": "DELETE", "csrfToken": csrf_token}
         requests.post(
-            f"https://app.pantrysoft.com/inventoryitem/delete/{item_id}",
+            f"{self.url}/inventoryitem/delete/{item_id}",
             **params,
             data=data,
         )
