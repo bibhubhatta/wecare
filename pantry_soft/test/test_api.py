@@ -7,11 +7,11 @@ class TestPantrySoftApi:
 
     def test_api_gets_item(self):
         test_item = Item(
-            upc="044000882105",
-            name="RITZ Peanut Butter Sandwich Crackers, 8 - 1.38 oz Snack Packs",
+            upc="99999999999",
+            name="Test Item 9 -- Will be deleted",
             category="",  # Category is not implemented yet
             unit="",  # Unit is not implemented yet
-            size=11.04,
+            size=99.99,
             description="",  # description blank because adding description is not yet implemented
         )
 
@@ -27,11 +27,11 @@ class TestPantrySoftApi:
 
     def test_api_creates_item(self):
         test_item = Item(
-            upc="070275000012",
-            name="Whink Rust Stain Remover, 16 fl oz",
+            upc="88888888888",
+            name="Test Item 8 -- Will be deleted",
             category="",  # Category is not implemented yet
             unit="",  # Unit is not implemented yet
-            size=16.0,
+            size=88.88,
             description="lol",  # description blank because adding description is not yet implemented
         )
 
