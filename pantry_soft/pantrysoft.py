@@ -14,53 +14,62 @@ class PantrySoft:
     def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoft object."""
         self.url = url
-        self.php_session = self.get_php_session(username, password)
 
-    def get_php_session(self, username: str, password: str) -> str:
+        self._cookies = self._get_cookies(username, password)
+        self._headers = self._get_default_headers()
+
+    def _get_cookies(self, username: str, password: str) -> dict:
+        """
+        Returns the cookies for the PantrySoft API.
+
+        Cookies are retrieved by logging into the PantrySoft website and extracting the PHP session ID.
+        """
         driver = PantrySoftDriver(self.url, username, password)
         php_session = driver.get_php_session()
         driver.driver.quit()
-        return php_session
+        return {"PHPSESSID": php_session}
 
-    def _get_request_params(self) -> dict:
+    @staticmethod
+    def _get_default_headers() -> dict:
         """Generate common request parameters."""
         return {
-            "cookies": {"PHPSESSID": self.php_session},
-            "headers": {
-                "authority": "app.pantrysoft.com",
-                "accept": "application/json, text/javascript, */*; q=0.01",
-                "accept-language": "en-US,en;q=0.9",
-                "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-                "sec-ch-ua-mobile": "?0",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "same-origin",
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "x-requested-with": "XMLHttpRequest",
-            },
+            "authority": "app.pantrysoft.com",
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "en-US,en;q=0.9",
+            "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "x-requested-with": "XMLHttpRequest",
         }
 
-    def _make_get_request(self, endpoint: str, indexdata: str) -> dict:
+    def _get_json(self, endpoint: str, indexdata: str = "indexdata") -> dict:
         """Make a GET request to the PantrySoft API."""
-        params = self._get_request_params()
-        params["params"] = {"_": str(int(time.time() * 1000))}
-        response = requests.get(f"{self.url}/{endpoint}/{indexdata}", **params)
+        params = {"_": str(int(time.time() * 1000))}
+        response = requests.get(
+            f"{self.url}/{endpoint}/{indexdata}",
+            headers=self._headers,
+            cookies=self._cookies,
+            params=params,
+        )
         return response.json()
 
     def get_all_items_json(self) -> dict:
         """Return the JSON response for all items."""
-        return self._make_get_request("inventoryitem", "indexdata")
+        return self._get_json("inventoryitem")
 
     def get_all_inventory_codes_json(self) -> dict:
         """Return the JSON response for all inventory codes."""
-        return self._make_get_request("inventory_code", "indexData")
+        return self._get_json("inventory_code", "indexData")
 
     def get_all_item_types_json(self) -> dict:
         """Return the JSON response for all item types."""
-        return self._make_get_request("inventoryitemtype", "indexdata")
+        return self._get_json("inventoryitemtype")
 
     def get_all_item_tags_json(self) -> dict:
         """Return the JSON response for all item tags."""
-        return self._make_get_request("inventoryitemtag", "indexdata")
+        return self._get_json("inventoryitemtag")
 
     def add_item(self, item: Item) -> None:
         """Create an item in the PantrySoft inventory and link its UPC code."""
@@ -70,12 +79,18 @@ class PantrySoft:
     def _create_item(self, item):
         """Create an item in the PantrySoft inventory."""
 
-        params = self._get_request_params()
-        response = requests.get(f"{self.url}/inventoryitem/new", **params)
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitem/new",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
         soup = BeautifulSoup(response.text, "html.parser")
         form_token = soup.find(
             "input", {"id": "pantrybundle_inventoryitem__token"}
         ).get("value")
+
+        # Send the create request
         data = {
             "pantrybundle_inventoryitem[name]": item.name,
             "pantrybundle_inventoryitem[itemNumber]": item.upc,
@@ -98,7 +113,8 @@ class PantrySoft:
         }
         requests.post(
             f"{self.url}/inventoryitem/new",
-            **params,
+            headers=self._headers,
+            cookies=self._cookies,
             data=data,
         )
 
@@ -118,28 +134,38 @@ class PantrySoft:
 
     def _link_code_to_item(self, item: Item) -> None:
         """Links UPC code to item in the PantrySoft inventory."""
+
+        # Check if the item exists in PantrySoft
         try:
             pantry_soft_item_id = self._get_item_pantry_soft_id(item)
         except ValueError:
             raise ValueError(f"Item with UPC {item.upc} not found in PantrySoft")
 
-        params = self._get_request_params()
-        response = requests.get(f"{self.url}/inventory_code/new", **params)
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventory_code/new",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
         soup = BeautifulSoup(response.text, "html.parser")
         form_token = soup.find(
             "input", {"id": "pantrybundle_inventoryitemcode__token"}
         ).get("value")
 
+        # Send the link request
         files = {
             "inventoryItem": (None, str(pantry_soft_item_id)),
             "pantrybundle_inventoryitemcode[codeNumber]": (None, item.upc),
             "pantrybundle_inventoryitemcode[_token]": (None, form_token),
         }
-
         response = requests.post(
-            "https://app.pantrysoft.com/inventory_code/new", **params, files=files
+            f"{self.url}/inventory_code/new",
+            headers=self._headers,
+            cookies=self._cookies,
+            files=files,
         )
 
+        # Check if the link was successful
         expected_message = f"Item Code {item.upc} for {item.name} Added"
         try:
             response_json = response.json()
@@ -147,7 +173,6 @@ class PantrySoft:
                 raise ValueError(
                     f"Failed to link item code {item.upc} to item {item.name} in PantrySoft. {response_json['message']}"
                 )
-
         except JSONDecodeError:
             raise ValueError(
                 f"Failed to link item code {item.upc} to item {item.name} in PantrySoft. {response.text}"
@@ -155,13 +180,21 @@ class PantrySoft:
 
     def delete_item(self, item_id: int) -> None:
         """Delete an item from the PantrySoft inventory."""
-        params = self._get_request_params()
-        response = requests.get("https://app.pantrysoft.com/inventoryitem/", **params)
+
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitem/",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
         soup = BeautifulSoup(response.text, "html.parser")
         csrf_token = soup.find("generic-delete-modal").get("csrf-token")
+
+        # Send the delete request
         data = {"_method": "DELETE", "csrfToken": csrf_token}
         requests.post(
             f"{self.url}/inventoryitem/delete/{item_id}",
-            **params,
+            headers=self._headers,
+            cookies=self._cookies,
             data=data,
         )
