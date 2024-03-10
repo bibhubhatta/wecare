@@ -24,7 +24,11 @@ class PantrySoftDriver:
     @staticmethod
     def __get_driver(url: str, username: str, password: str) -> webdriver.Chrome:
         """Return a Selenium WebDriver."""
-        driver = webdriver.Chrome()
+        # Start the web driver headless
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+
+        driver = webdriver.Chrome(options=options)
         driver.get(url)
 
         driver.find_element(By.ID, "username").send_keys(username)
