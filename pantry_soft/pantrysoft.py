@@ -163,16 +163,12 @@ class PantrySoft:
         """Get the PantrySoft item with the given item number."""
         all_items = self.get_all_items_json()["data"]
 
-        item_id = None
         # Iterating in reverse because it is more likely that the item was added recently
         for pantry_soft_item in reversed(all_items):
             if pantry_soft_item["itemNumber"] == item_number:
                 return pantry_soft_item
 
-        if not item_id:
-            raise ValueError(
-                f"Item with item number {item_number} not found in PantrySoft"
-            )
+        raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
 
     def get_item_id(self, item_number: str) -> int:
         """Get the PantrySoft item ID with the given item number."""
