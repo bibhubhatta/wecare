@@ -65,6 +65,10 @@ class PantrySoftApi(PantryApi):
         Parameters:
         - item (Item): The item to set in the pantry.
         """
+
+        if item.category == "":
+            raise ValueError("Item category cannot be empty")
+
         try:
             self.read_item(item.upc)
         except ValueError:
@@ -73,6 +77,7 @@ class PantrySoftApi(PantryApi):
                 name=item.name,
                 size=item.size,
                 description=item.description,
+                item_type=item.category,
             )
             return
 
@@ -99,6 +104,47 @@ class PantrySoftApi(PantryApi):
             self.__pantry_soft.delete_item(item_id)
         except ValueError:
             raise ValueError(f"Item with UPC {upc} not found in the pantry")
+
+    def create_item_category(self, category: str) -> None:
+        """
+        Create a new category in the pantry.
+
+        Parameters:
+        - category (str): The category to create.
+        """
+        try:
+            self.__pantry_soft.get_item_type_id(category)
+        except ValueError:
+            self.__pantry_soft.create_item_type(category)
+            return
+
+        raise ValueError(f"Category {category} already exists in the pantry")
+
+    def read_all_categories(self) -> list[str]:
+        """
+        Retrieve all categories from the pantry.
+
+        Returns:
+        list[str]: The retrieved categories.
+        """
+        pantry_soft_categories = self.__pantry_soft.get_all_item_types_json()["data"]
+        categories = []
+        for pantry_soft_category in pantry_soft_categories:
+            categories.append(pantry_soft_category["name"])
+        return categories
+
+    def delete_item_category(self, category: str) -> None:
+        """
+        Delete all items from the pantry with a given category.
+
+        Parameters:
+        - category (str): The category of the items to delete.
+        """
+        try:
+            item_type_id = self.__pantry_soft.get_item_type_id(category)
+            self.__pantry_soft.delete_item_type(item_type_id)
+        except ValueError:
+            raise ValueError(f"No items found in the pantry with category {category}")
 
     def add_item_image(self, upc: str, image: bytes) -> None:
         """

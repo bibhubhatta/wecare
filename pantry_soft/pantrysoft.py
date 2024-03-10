@@ -105,16 +105,21 @@ class PantrySoft:
         return self._get_json("inventoryitemtag")
 
     def add_item(
-        self, item_number: str, name: str, size: float, description: str
+        self, item_number: str, name: str, item_type: str, size: float, description: str
     ) -> None:
         """Create an item in the PantrySoft inventory and link item number as its code."""
-        self._create_item(item_number, name, size, description)
+        self._create_item(item_number, name, item_type, size, description)
         self._link_code_to_item(
             item_number=item_number, name=name, code_number=item_number
         )
 
     def _create_item(
-        self, item_number: str, name: str, weight: float, description: str
+        self,
+        item_number: str,
+        name: str,
+        item_type: str,
+        weight: float,
+        description: str,
     ) -> None:
         """Create an item in the PantrySoft inventory."""
 
@@ -129,11 +134,18 @@ class PantrySoft:
             "input", {"id": "pantrybundle_inventoryitem__token"}
         ).get("value")
 
+        # Check if item type exists
+        try:
+            item_type_id = self.get_item_type_id(item_type)
+        except ValueError:
+            self.create_item_type(item_type)
+            item_type_id = self.get_item_type_id(item_type)
+
         # Send the create request
         data = {
             "pantrybundle_inventoryitem[name]": name,
             "pantrybundle_inventoryitem[itemNumber]": item_number,
-            "pantrybundle_inventoryitem[inventoryItemType]": "1",
+            "pantrybundle_inventoryitem[inventoryItemType]": str(item_type_id),
             "pantrybundle_inventoryitem[unit]": "Ounces",
             "pantrybundle_inventoryitem[value]": "0.00",
             "pantrybundle_inventoryitem[weight]": str(weight),
@@ -332,5 +344,73 @@ class PantrySoft:
             f"{self.url}/inventoryitem/{item['id']}/edit",
             cookies=self._cookies,
             headers=headers,
+            data=data,
+        )
+
+    def create_item_type(self, item_type: str) -> None:
+        """Create an item type in the PantrySoft inventory."""
+
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitemtype/new",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
+        soup = BeautifulSoup(response.text, "html.parser")
+        form_token = soup.find(
+            "input", {"id": "pantrybundle_inventoryitemtype__token"}
+        ).get("value")
+
+        # Send the create request
+        data = {
+            "pantrybundle_inventoryitemtype[name]": item_type,
+            "rules[1][limit]": "1",
+            "rules[1][default]": "1",
+            "rules[1][householdSizeId]": "1",
+            "rules[1][id]": "",
+            "pantrybundle_inventoryitemtype[backgroundColor]": "",
+            "pantrybundle_inventoryitemtype[symbolType]": "",
+            "fileupload": "",
+            "pantrybundle_inventoryitemtype[icon]": "",
+            "pantrybundle_inventoryitemtype[imageUploadId]": "",
+            "pantrybundle_inventoryitemtype[_token]": form_token,
+        }
+
+        requests.post(
+            f"{self.url}/inventoryitemtype/new",
+            headers=self._headers,
+            cookies=self._cookies,
+            data=data,
+        )
+
+    def get_item_type_id(self, item_type: str) -> int:
+        """Get the PantrySoft item type ID with the given item type."""
+        all_item_types = self.get_all_item_types_json()["data"]
+
+        for item_type_data in all_item_types:
+            if item_type_data["name"] == item_type:
+                return item_type_data["id"]
+
+        raise ValueError(f"Item type {item_type} not found in PantrySoft")
+
+    def delete_item_type(self, item_type_id: int) -> None:
+        """Delete an item type from the PantrySoft inventory."""
+
+        # Get the CSRF token
+        response = requests.get(
+            f"{self.url}/inventoryitemtype/{item_type_id}/edit",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
+        soup = BeautifulSoup(response.text, "html.parser")
+        csrf_token = soup.find("generic-delete-modal").get("csrf-token")
+
+        # Send the delete request
+        data = {"_method": "DELETE", "csrfToken": csrf_token}
+
+        requests.post(
+            f"{self.url}/inventoryitemtype/delete/{item_type_id}",
+            headers=self._headers,
+            cookies=self._cookies,
             data=data,
         )
