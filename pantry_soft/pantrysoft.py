@@ -1,5 +1,6 @@
 import json
 import time
+from functools import cache
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,6 +18,8 @@ class PantrySoft:
 
         self._cookies = self._get_cookies(username, password)
         self._headers = self._get_default_headers()
+
+        self.last_item_changed = time.time()
 
     def _get_cookies(self, username: str, password: str) -> dict:
         """
@@ -80,9 +83,14 @@ class PantrySoft:
         )
         return response.json()
 
-    def get_all_items_json(self) -> dict:
+    @cache
+    def _get_all_items_json_cached(self, last_item_changed: float) -> dict:
         """Return the JSON response for all items."""
         return self._get_json("inventoryitem")
+
+    def get_all_items_json(self) -> dict:
+        """Return the JSON response for all items."""
+        return self._get_all_items_json_cached(self.last_item_changed)
 
     def get_all_inventory_codes_json(self) -> dict:
         """Return the JSON response for all inventory codes."""
@@ -149,21 +157,26 @@ class PantrySoft:
             data=data,
         )
 
-    def get_item_id(self, item_number: str) -> int:
-        """Get the PantrySoft item ID for an item."""
+        self.last_item_changed = time.time()
+
+    def get_item(self, item_number: str) -> dict:
+        """Get the PantrySoft item with the given item number."""
         all_items = self.get_all_items_json()["data"]
 
         item_id = None
         # Iterating in reverse because it is more likely that the item was added recently
         for pantry_soft_item in reversed(all_items):
             if pantry_soft_item["itemNumber"] == item_number:
-                item_id = pantry_soft_item["id"]
-                return item_id
+                return pantry_soft_item
 
         if not item_id:
             raise ValueError(
                 f"Item with item number {item_number} not found in PantrySoft"
             )
+
+    def get_item_id(self, item_number: str) -> int:
+        """Get the PantrySoft item ID with the given item number."""
+        return self.get_item(item_number)["id"]
 
     def _link_code_to_item(self, item_number: str, name: str, code_number: str) -> None:
         """Links item code to item in the PantrySoft inventory."""
@@ -233,3 +246,5 @@ class PantrySoft:
             cookies=self._cookies,
             data=data,
         )
+
+        self.last_item_changed = time.time()
