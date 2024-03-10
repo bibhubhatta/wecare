@@ -49,3 +49,19 @@ class ShopriteItemApi(ItemApi):
         size = json_data["unitsOfSize"]["size"]
         description = json_data["description"]
         return Item(upc, name, category, unit, size, description)
+
+    def get_image(self, upc: str) -> bytes:
+        """
+        Retrieve an item image from the Shoprite API.
+
+        Parameters:
+        - upc (str): The Universal Product Code of the item to retrieve.
+
+        Returns:
+        bytes: The retrieved item image.
+        """
+        json_data = self.get_json(upc)
+        image_url = json_data["primaryImage"]["default"]
+        response = self.client.get(image_url)
+        response.raise_for_status()
+        return response.content
