@@ -38,9 +38,7 @@ class PantrySoft:
         """Make a GET request to the PantrySoft API."""
         params = self._get_request_params()
         params["params"] = {"_": str(int(time.time() * 1000))}
-        response = requests.get(
-            f"{self.url}/{endpoint}/{indexdata}", **params
-        )
+        response = requests.get(f"{self.url}/{endpoint}/{indexdata}", **params)
         return response.json()
 
     def get_all_items_json(self) -> dict:
@@ -63,9 +61,7 @@ class PantrySoft:
         """Add an item to the PantrySoft inventory."""
 
         params = self._get_request_params()
-        response = requests.get(
-            f"{self.url}/inventoryitem/new", **params
-        )
+        response = requests.get(f"{self.url}/inventoryitem/new", **params)
         soup = BeautifulSoup(response.text, "html.parser")
         form_token = soup.find(
             "input", {"id": "pantrybundle_inventoryitem__token"}
