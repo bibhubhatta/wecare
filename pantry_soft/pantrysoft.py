@@ -257,7 +257,7 @@ class PantrySoft:
 
         self.last_item_changed = time.time()
 
-    def upload_image(self, image: bytes) -> int:
+    def _upload_image(self, image: bytes) -> int:
         """
         Upload an image to the PantrySoft item.
 
@@ -317,7 +317,7 @@ class PantrySoft:
         headers["origin"] = self.url
         headers["referer"] = f"{self.url}/inventoryitem/{item['id']}/edit"
 
-        image_id = self.upload_image(image)
+        image_id = self._upload_image(image)
 
         data = {
             "pantrybundle_inventoryitem[name]": item["name"],
