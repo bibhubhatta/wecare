@@ -1,3 +1,5 @@
+import pytest
+
 from inventory.item import Item
 from pantry_soft.api import PantrySoftApi
 
@@ -63,8 +65,5 @@ class TestPantrySoftApi:
 
         self.api.delete_item(test_item.upc)
 
-        try:
+        with pytest.raises(ValueError):
             self.api.read_item(test_item.upc)
-            assert False
-        except ValueError:
-            assert True
