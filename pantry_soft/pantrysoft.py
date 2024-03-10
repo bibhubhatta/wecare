@@ -60,7 +60,43 @@ class PantrySoft:
 
     def add_item(self, item: Item) -> None:
         """Add an item to the PantrySoft inventory."""
-        self.driver.add_item(item)
+
+        params = self._get_request_params()
+        response = requests.get(
+            "https://app.pantrysoft.com/inventoryitem/new", **params
+        )
+        soup = BeautifulSoup(response.text, "html.parser")
+        form_token = soup.find(
+            "input", {"id": "pantrybundle_inventoryitem__token"}
+        ).get("value")
+
+        data = {
+            "pantrybundle_inventoryitem[name]": item.name,
+            "pantrybundle_inventoryitem[itemNumber]": item.upc,
+            "pantrybundle_inventoryitem[inventoryItemType]": "1",
+            "pantrybundle_inventoryitem[unit]": "Ounces",
+            "pantrybundle_inventoryitem[value]": "0.00",
+            "pantrybundle_inventoryitem[weight]": str(item.size),
+            "pantrybundle_inventoryitem[outOfStockThreshold]": "0.00",
+            "pantrybundle_inventoryitem[isActive]": "1",
+            "pantrybundle_inventoryitem[isVisit]": "1",
+            "pantrybundle_inventoryitem[isKiosk]": "1",
+            "pantrybundle_inventoryitem[isStore]": "1",
+            "pantrybundle_inventoryitem[backgroundColor]": "",
+            "pantrybundle_inventoryitem[symbolType]": "",
+            "fileupload": "",
+            "pantrybundle_inventoryitem[description]": item.description,
+            "pantrybundle_inventoryitem[icon]": "",
+            "pantrybundle_inventoryitem[imageUploadId]": "",
+            "pantrybundle_inventoryitem[_token]": form_token,
+        }
+
+        requests.post(
+            "https://app.pantrysoft.com/inventoryitem/new",
+            **params,
+            data=data,
+        )
+
         sleep(1)
         self.driver.link_code_to_item(item)
 
