@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 from requests import JSONDecodeError
 
-from inventory.item import Item
 from pantry_soft.driver import PantrySoftDriver
 
 
@@ -97,12 +96,18 @@ class PantrySoft:
         """Return the JSON response for all item tags."""
         return self._get_json("inventoryitemtag")
 
-    def add_item(self, item: Item) -> None:
-        """Create an item in the PantrySoft inventory and link its UPC code."""
-        self._create_item(item)
-        self._link_code_to_item(item)
+    def add_item(
+            self, item_number: str, name: str, size: float, description: str
+    ) -> None:
+        """Create an item in the PantrySoft inventory and link item number as its code."""
+        self._create_item(item_number, name, size, description)
+        self._link_code_to_item(
+            item_number=item_number, name=name, code_number=item_number
+        )
 
-    def _create_item(self, item):
+    def _create_item(
+            self, item_number: str, name: str, weight: float, description: str
+    ) -> None:
         """Create an item in the PantrySoft inventory."""
 
         # Get the CSRF token
@@ -118,12 +123,12 @@ class PantrySoft:
 
         # Send the create request
         data = {
-            "pantrybundle_inventoryitem[name]": item.name,
-            "pantrybundle_inventoryitem[itemNumber]": item.upc,
+            "pantrybundle_inventoryitem[name]": name,
+            "pantrybundle_inventoryitem[itemNumber]": item_number,
             "pantrybundle_inventoryitem[inventoryItemType]": "1",
             "pantrybundle_inventoryitem[unit]": "Ounces",
             "pantrybundle_inventoryitem[value]": "0.00",
-            "pantrybundle_inventoryitem[weight]": str(item.size),
+            "pantrybundle_inventoryitem[weight]": str(weight),
             "pantrybundle_inventoryitem[outOfStockThreshold]": "0.00",
             "pantrybundle_inventoryitem[isActive]": "1",
             "pantrybundle_inventoryitem[isVisit]": "1",
@@ -132,7 +137,7 @@ class PantrySoft:
             "pantrybundle_inventoryitem[backgroundColor]": "",
             "pantrybundle_inventoryitem[symbolType]": "",
             "fileupload": "",
-            "pantrybundle_inventoryitem[description]": item.description,
+            "pantrybundle_inventoryitem[description]": description,
             "pantrybundle_inventoryitem[icon]": "",
             "pantrybundle_inventoryitem[imageUploadId]": "",
             "pantrybundle_inventoryitem[_token]": form_token,
@@ -144,28 +149,28 @@ class PantrySoft:
             data=data,
         )
 
-    def _get_item_pantry_soft_id(self, item: Item) -> int:
+    def get_item_id(self, item_number: str) -> int:
         """Get the PantrySoft item ID for an item."""
         all_items = self.get_all_items_json()["data"]
 
-        pantry_soft_item_id = None
+        item_id = None
         # Iterating in reverse because it is more likely that the item was added recently
         for pantry_soft_item in reversed(all_items):
-            if pantry_soft_item["itemNumber"] == item.upc:
-                pantry_soft_item_id = pantry_soft_item["id"]
-                return pantry_soft_item_id
+            if pantry_soft_item["itemNumber"] == item_number:
+                item_id = pantry_soft_item["id"]
+                return item_id
 
-        if not pantry_soft_item_id:
-            raise ValueError(f"Item with UPC {item.upc} not found in PantrySoft")
+        if not item_id:
+            raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
 
-    def _link_code_to_item(self, item: Item) -> None:
-        """Links UPC code to item in the PantrySoft inventory."""
+    def _link_code_to_item(self, item_number: str, name: str, code_number: str) -> None:
+        """Links item code to item in the PantrySoft inventory."""
 
         # Check if the item exists in PantrySoft
         try:
-            pantry_soft_item_id = self._get_item_pantry_soft_id(item)
+            item_id = self.get_item_id(item_number)
         except ValueError:
-            raise ValueError(f"Item with UPC {item.upc} not found in PantrySoft")
+            raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
 
         # Get the CSRF token
         response = requests.get(
@@ -180,8 +185,8 @@ class PantrySoft:
 
         # Send the link request
         files = {
-            "inventoryItem": (None, str(pantry_soft_item_id)),
-            "pantrybundle_inventoryitemcode[codeNumber]": (None, item.upc),
+            "inventoryItem": (None, str(item_id)),
+            "pantrybundle_inventoryitemcode[codeNumber]": (None, code_number),
             "pantrybundle_inventoryitemcode[_token]": (None, form_token),
         }
         response = requests.post(
@@ -192,16 +197,16 @@ class PantrySoft:
         )
 
         # Check if the link was successful
-        expected_message = f"Item Code {item.upc} for {item.name} Added"
+        expected_message = f"Item Code {item_number} for {name} Added"
         try:
             response_json = response.json()
             if response_json["message"] != expected_message:
                 raise ValueError(
-                    f"Failed to link item code {item.upc} to item {item.name} in PantrySoft. {response_json['message']}"
+                    f"Failed to link item code {item_number} to item {name} in PantrySoft. {response_json['message']}"
                 )
         except JSONDecodeError:
             raise ValueError(
-                f"Failed to link item code {item.upc} to item {item.name} in PantrySoft. {response.text}"
+                f"Failed to link item code {item_number} to item {name} in PantrySoft. {response.text}"
             )
 
     def delete_item(self, item_id: int) -> None:
