@@ -23,14 +23,13 @@ class TestPantrySoftApi:
         )
 
         self.api.create_item(test_item)
-
         returned_item = self.api.read_item(test_item.upc)
+        self.api.delete_item(test_item.upc)
 
         assert returned_item.upc == test_item.upc
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
 
-        self.api.delete_item(test_item.upc)
 
     def test_api_creates_item(self):
         test_item = Item(
@@ -43,14 +42,13 @@ class TestPantrySoftApi:
         )
 
         self.api.create_item(test_item)
-
         returned_item = self.api.read_item(test_item.upc)
+        self.api.delete_item(test_item.upc)
 
         assert returned_item.upc == test_item.upc
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
 
-        self.api.delete_item(test_item.upc)
 
     def test_api_deletes_item(self):
         test_item = Item(
@@ -63,12 +61,10 @@ class TestPantrySoftApi:
         )
 
         self.api.create_item(test_item)
-
         returned_item = self.api.read_item(test_item.upc)
+        self.api.delete_item(test_item.upc)
 
         assert returned_item.upc == test_item.upc
-
-        self.api.delete_item(test_item.upc)
 
         with pytest.raises(ValueError):
             self.api.read_item(test_item.upc)
