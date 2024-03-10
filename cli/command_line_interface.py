@@ -20,7 +20,8 @@ class CommandLineInterface:
     def get_item_from_input(upc: str) -> Item:
         print("\n")
         name = input(f"Enter name for {upc}: ")
-        size = float(input(f"Enter size for {upc}: "))
+        # Skipping size because it is not necessary for now and slows down the process
+        size = 0
         # Skipping category, unit, and description because they are not implemented yet
         category = ""
         unit = ""
