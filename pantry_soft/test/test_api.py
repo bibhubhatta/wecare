@@ -30,7 +30,6 @@ class TestPantrySoftApi:
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
 
-
     def test_api_creates_item(self):
         test_item = Item(
             upc="88888888888",
@@ -48,7 +47,6 @@ class TestPantrySoftApi:
         assert returned_item.upc == test_item.upc
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
-
 
     def test_api_deletes_item(self):
         test_item = Item(
