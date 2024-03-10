@@ -1,3 +1,4 @@
+import json
 import time
 
 import requests
@@ -24,9 +25,34 @@ class PantrySoft:
 
         Cookies are retrieved by logging into the PantrySoft website and extracting the PHP session ID.
         """
+
+        # Check if the cookie is cached
+        try:
+            with open("cookies.json", "r") as f:
+                cookies_dict = json.loads(f.read())
+
+            # Check if the cookies are still valid
+            if cookies_dict["expiry"] > time.time():
+                return {"PHPSESSID": cookies_dict["PHPSESSID"]}
+        except FileNotFoundError:
+            pass
+
+        # Get the cookies by logging in
         driver = PantrySoftDriver(self.url, username, password)
         php_session = driver.get_php_session()
+        php_session_expiry = driver.get_php_session_expiry()
         driver.driver.quit()
+
+        # Cache the cookie for future use
+        cookies_dict = {
+            "user": username,
+            "PHPSESSID": php_session,
+            "expiry": php_session_expiry,
+        }
+
+        with open("cookies.txt", "w") as f:
+            f.write(json.dumps(cookies_dict))
+
         return {"PHPSESSID": php_session}
 
     @staticmethod

@@ -21,6 +21,11 @@ class PantrySoftDriver:
         """Return the PHP session ID."""
         return self.driver.get_cookie("PHPSESSID")["value"]
 
+    def get_php_session_expiry(self) -> int:
+        """Return the PHP session expiry time in unix timestamp."""
+        expiry = self.driver.get_cookie("PHPSESSID")["expiry"]
+        return expiry
+
     @staticmethod
     def __get_driver(url: str, username: str, password: str) -> webdriver.Chrome:
         """Return a Selenium WebDriver."""
@@ -89,3 +94,7 @@ class PantrySoftDriver:
         submit_button = self.driver.find_element(By.XPATH, button_xpath)
         submit_button.send_keys(Keys.ENTER)
         sleep(0.5)
+
+    def close(self):
+        """Close the web driver."""
+        self.driver.quit()
