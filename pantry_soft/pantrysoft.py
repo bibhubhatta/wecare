@@ -49,7 +49,7 @@ class PantrySoft:
             "expiry": php_session_expiry,
         }
 
-        with open("cookies.txt", "w") as f:
+        with open("cookies.json", "w") as f:
             f.write(json.dumps(cookies_dict))
 
         return {"PHPSESSID": php_session}
