@@ -58,7 +58,12 @@ class PantrySoft:
         return self._make_get_request("inventoryitemtag", "indexdata")
 
     def add_item(self, item: Item) -> None:
-        """Add an item to the PantrySoft inventory."""
+        """Create an item in the PantrySoft inventory and link its UPC code."""
+        self._create_item(item)
+        self._link_code_to_item(item)
+
+    def _create_item(self, item):
+        """Create an item in the PantrySoft inventory."""
 
         params = self._get_request_params()
         response = requests.get(f"{self.url}/inventoryitem/new", **params)
@@ -66,7 +71,6 @@ class PantrySoft:
         form_token = soup.find(
             "input", {"id": "pantrybundle_inventoryitem__token"}
         ).get("value")
-
         data = {
             "pantrybundle_inventoryitem[name]": item.name,
             "pantrybundle_inventoryitem[itemNumber]": item.upc,
@@ -87,16 +91,13 @@ class PantrySoft:
             "pantrybundle_inventoryitem[imageUploadId]": "",
             "pantrybundle_inventoryitem[_token]": form_token,
         }
-
         requests.post(
             f"{self.url}/inventoryitem/new",
             **params,
             data=data,
         )
 
-        self.link_code_to_item(item)
-
-    def get_item_pantry_soft_id(self, item: Item) -> int:
+    def _get_item_pantry_soft_id(self, item: Item) -> int:
         """Get the PantrySoft item ID for an item."""
         all_items = self.get_all_items_json()["data"]
 
@@ -110,10 +111,10 @@ class PantrySoft:
         if not pantry_soft_item_id:
             raise ValueError(f"Item with UPC {item.upc} not found in PantrySoft")
 
-    def link_code_to_item(self, item: Item) -> None:
+    def _link_code_to_item(self, item: Item) -> None:
         """Links UPC code to item in the PantrySoft inventory."""
         try:
-            pantry_soft_item_id = self.get_item_pantry_soft_id(item)
+            pantry_soft_item_id = self._get_item_pantry_soft_id(item)
         except ValueError:
             raise ValueError(f"Item with UPC {item.upc} not found in PantrySoft")
 
