@@ -413,7 +413,9 @@ class PantrySoft:
             "pantrybundle_inventoryitem[backgroundColor]": "",
             "pantrybundle_inventoryitem[symbolType]": "image",
             "fileupload": "",
-            # "pantrybundle_inventoryitem[description]": item["description"],
+            "pantrybundle_inventoryitem[description]": self.get_item_description(
+                item_number=item["itemNumber"]
+            ),
             "pantrybundle_inventoryitem[icon]": "",
             "pantrybundle_inventoryitem[imageUploadId]": str(image_id),
             "pantrybundle_inventoryitem[_token]": form_token,
