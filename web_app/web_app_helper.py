@@ -1,5 +1,4 @@
 import os
-import time
 from time import sleep
 
 import django
@@ -44,7 +43,6 @@ def process_request(add_request, shoprite, pantry_soft):
     if item := get_pantry_soft_item(pantry_soft, upc):
         add_request.success = True
         add_to_message(add_request, "Item already in PantrySoft.")
-        add_request.processed_at = time.time()
         add_request.item_description = item.description
 
         if item_in_shoprite(shoprite, upc):
@@ -74,12 +72,34 @@ def process_request(add_request, shoprite, pantry_soft):
         add_to_message(add_request, "Item not found in Shoprite.")
 
 
+def process_manual_request(add_request, pantry_soft):
+    add_to_message(add_request, "Checking PantrySoft...")
+
+    upc = add_request.upc
+    if item := get_pantry_soft_item(pantry_soft, upc):
+        add_request.success = True
+        add_to_message(add_request, "Item already in PantrySoft.")
+        add_request.item_description = item.description
+        add_request.save()
+        return
+
+    item = Item(
+        upc, add_request.item_name, "Manual Entry", "", 0.0, "Manually added item."
+    )
+    add_to_message(add_request, "Adding item to PantrySoft...")
+    pantry_soft.create_item(item)
+    add_to_message(add_request, "Item added to PantrySoft.")
+    add_request.item_description = f"{item.description} {add_request.item_name}"
+    add_request.success = True
+    add_request.save()
+
+
 def main():
     print("Starting...")
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web_app.settings")
     django.setup()
-    from ui.models import AutoAddRequest
+    from ui.models import AutoAddRequest, ManualAddRequest
 
     print("Loading Shoprite API...")
     shoprite = ShopriteItemApi()
@@ -100,6 +120,16 @@ def main():
 
         for add_request in auto_add_requests:
             print(f"Processing request {add_request.id}...")
+
+            # Check if the request is also of type ManualAddRequest
+            try:
+                manual_add_request = ManualAddRequest.objects.get(pk=add_request.id)
+                print(f"Processing manual request {add_request.id}...")
+                process_manual_request(manual_add_request, pantry_soft)
+                continue
+            except ManualAddRequest.DoesNotExist:
+                print(f"Processing auto request {add_request.id}...")
+
             process_request(add_request, shoprite, pantry_soft)
             sleep(0.5)
 

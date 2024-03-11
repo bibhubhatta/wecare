@@ -9,12 +9,20 @@
 
 <h1>Add item details</h1>
 
-{% if add_request.success %}
-    <form method="post" action="{% url 'add_item' %}" )>
-        {% csrf_token %}
-        {{ auto_add_request_form.as_p }}
-        <button type="submit">Add Item</button>
-    </form>
+{% if add_request.success != None %}
+    {% if post_url == 'add_item' %}
+        <form method="post" action="{% url 'add_item' %}" )>
+            {% csrf_token %}
+            {{ add_request_form.as_p }}
+            <button type="submit">Add Item</button>
+        </form>
+    {% elif post_url == 'manual_add_item' %}
+        <form method="post" action="{% url 'manual_add_item' %}" )>
+            {% csrf_token %}
+            {{ add_request_form.as_p }}
+            <button type="submit">Add Item</button>
+        </form>
+    {% endif %}
 {% endif %}
 
 

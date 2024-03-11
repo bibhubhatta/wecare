@@ -9,4 +9,5 @@ urlpatterns = [
         views.add_item_result,
         name="add_item_result",
     ),
+    path("manual_add_item", views.manual_add_item, name="manual_add_item"),
 ]

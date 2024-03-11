@@ -23,14 +23,8 @@ class AutoAddRequestForm(forms.ModelForm):
         widgets = {"upc": forms.TextInput(attrs={"autofocus": "autofocus"})}
 
 
-class ManualAddRequest(models.Model):
-    id = models.AutoField(primary_key=True)
-    upc = models.CharField(max_length=20)
+class ManualAddRequest(AutoAddRequest):
     item_name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    success = models.BooleanField(null=True)
-    message = models.TextField(blank=True)
 
 
 class ManualAddRequestForm(forms.ModelForm):
