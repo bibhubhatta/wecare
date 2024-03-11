@@ -29,7 +29,7 @@ class ShopriteItemApi(ItemApi):
         Returns:
         Dict[str, Any]: The retrieved item data in JSON format.
         """
-        endpoint = f"{self.endpoint}00{upc}"
+        endpoint = f"{self.endpoint}{upc.zfill(14)}"
         response = self.client.get(endpoint)
         response.raise_for_status()
         return response.json()
