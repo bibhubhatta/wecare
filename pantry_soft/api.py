@@ -24,13 +24,14 @@ class PantrySoftApi(PantryApi):
 
         try:
             pantry_soft_item = self.__pantry_soft.get_item(upc)
+            item_description = self.__pantry_soft.get_item_description(upc)
             return Item(
                 upc,
                 name=pantry_soft_item["name"],
                 category=pantry_soft_item["itemTypeString"],
                 unit=pantry_soft_item["unit"],
                 size=float(pantry_soft_item["weight"]),
-                description="",  # description is not available directly from the json response
+                description=item_description,
             )
 
         except ValueError:

@@ -182,6 +182,33 @@ class PantrySoft:
 
         raise ValueError(f"Item with item number {item_number} not found in PantrySoft")
 
+    def get_item_description(self, item_number: str) -> str:
+        """Get the PantrySoft item description with the given item number."""
+        try:
+            item_id = self.get_item_id(item_number)
+        except ValueError as e:
+            raise ValueError(
+                f"Item with item number {item_number} not found in PantrySoft"
+            ) from e
+
+        # Get the edit page for the item
+        response = requests.get(
+            f"{self.url}/inventoryitem/{item_id}/edit",
+            headers=self._headers,
+            cookies=self._cookies,
+        )
+
+        # Extract the description from the response
+        soup = BeautifulSoup(response.text, "html.parser")
+        description = soup.find(
+            "textarea", {"id": "pantrybundle_inventoryitem_description"}
+        )
+
+        if description is None:
+            raise ValueError(f"Failed to get description for item {item_number}")
+
+        return description.text
+
     def get_item_id(self, item_number: str) -> int:
         """Get the PantrySoft item ID with the given item number."""
         return self.get_item(item_number)["id"]

@@ -19,7 +19,7 @@ class TestPantrySoftApi:
         category="Anime",
         unit="",  # Unit is not implemented yet
         size=1.11,
-        description="",  # description blank because adding description is not yet implemented
+        description="The One Piece! The treasure that is worth everything in the world!",
     )
 
     def test_api_gets_item(self):
@@ -29,7 +29,7 @@ class TestPantrySoftApi:
             category="Test Category 9",
             unit="",  # Unit is not implemented yet
             size=99.99,
-            description="",  # description blank because adding description is not yet implemented
+            description="This is a test item and will be deleted.",
         )
 
         self.api.create_item(test_item)
@@ -41,6 +41,7 @@ class TestPantrySoftApi:
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
         assert returned_item.category == test_item.category
+        assert returned_item.description == test_item.description
 
     def test_api_creates_item(self):
         test_item = Item(
@@ -49,7 +50,7 @@ class TestPantrySoftApi:
             category="Test Category 8",
             unit="",  # Unit is not implemented yet
             size=88.88,
-            description="lol",  # description blank because adding description is not yet implemented
+            description="This is a test item and will be deleted.",
         )
 
         self.api.create_item(test_item)
@@ -61,6 +62,7 @@ class TestPantrySoftApi:
         assert returned_item.name == test_item.name
         assert returned_item.size == test_item.size
         assert returned_item.category == test_item.category
+        assert returned_item.description == test_item.description
 
     def test_api_updates_item(self):
         test_item = self.one_piece
@@ -68,6 +70,11 @@ class TestPantrySoftApi:
         self.api.create_item(test_item)
         updated_item = copy.deepcopy(test_item)
         updated_item.name = "Two Piece"
+        updated_item.size = 2.22
+        updated_item.category = "Manga"
+        updated_item.description = (
+            "The Two Piece! The treasure that is worth twice the world!"
+        )
 
         self.api.update_item(updated_item)
         returned_item = self.api.read_item(test_item.upc)
@@ -78,6 +85,7 @@ class TestPantrySoftApi:
         assert returned_item.name == updated_item.name
         assert returned_item.size == updated_item.size
         assert returned_item.category == updated_item.category
+        assert returned_item.description == updated_item.description
 
     def test_api_deletes_item(self):
         test_item = self.one_piece
