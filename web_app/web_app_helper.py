@@ -62,9 +62,15 @@ def process_request(add_request, shoprite, pantry_soft):
         item.description = item_description
 
         pantry_soft.create_item(item)
-        add_request.success = True
         add_request.item_description = item_description
         add_request.item_image_url = item_json["primaryImage"]["default"]
+        image = shoprite.get_image(upc)
+
+        add_to_message(add_request, "Adding item image to PantrySoft...")
+        pantry_soft.add_item_image(upc, image)
+
+        add_request.success = True
+
         add_to_message(add_request, "Item added to PantrySoft.")
 
     else:
