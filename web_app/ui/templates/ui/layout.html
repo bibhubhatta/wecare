@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+{% block heading %} {% endblock heading %}
+
+{% if auto_add_request_form %}
+    <form method="post">
+        {% csrf_token %}
+        {{ auto_add_request_form.as_p }}
+        <button type="submit">Add Item</button>
+    </form>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

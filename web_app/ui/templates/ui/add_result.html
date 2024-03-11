@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<h1>Add item details</h1>
+
+{% if add_request.success %}
+    <form method="post" action="{% url 'add_item' %}" )>
+        {% csrf_token %}
+        {{ auto_add_request_form.as_p }}
+        <button type="submit">Add Item</button>
+    </form>
+{% endif %}
+
+
+<h2>Progress</h2>
+
+<ul>
+    {% for m in add_request.message.splitlines %}
+        <li>{{ m }}</li>
+    {% endfor %}
+</ul>
+
+{% if add_request.item_description %}
+    {{ add_request.item_description | safe }}
+{% endif %}
+
+{% if add_request.item_image_url %}
+    <img src="{{ add_request.item_image_url }}" alt="Item">
+{% endif %}
+
+<h2>Request details</h2>
+
+<ul>
+    <li>Request ID: {{ add_request.id }}</li>
+    <li>Request UPC: {{ add_request.upc }}</li>
+    <li>Request Created: {{ add_request.created_at }}</li>
+    <li>Request Success: {{ add_request.success }}</li>
+</ul>
+
+</body>
+
+{% if add_request.success == None %}
+    <script>
+        setTimeout(function () {
+            location.reload();
+        }, 500);
+    </script>
+{% endif %}
+
+
+</html>
