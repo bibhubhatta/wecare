@@ -1,3 +1,4 @@
+from functools import cache
 from typing import Any, Dict
 
 import requests
@@ -17,6 +18,7 @@ class ShopriteItemApi(ItemApi):
         self.client = requests.Session()
         self.client.headers.update(headers)
 
+    @cache
     def get_json(self, upc: str) -> Dict[str, Any]:
         """
         Retrieve item data in JSON format from the Shoprite API.
