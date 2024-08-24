@@ -56,3 +56,38 @@ def get_detailed_description(shoprite_item_json: dict) -> str:
     html_description += "</table>"
 
     return html_description
+
+
+def is_valid_upc(upc: str) -> bool:
+    """
+    Check if a UPC is valid using the check digit algorithm.
+
+    The check digit is the last digit of the UPC and is calculated
+    using the following steps:
+        - Sum the digits at odd positions (1st, 3rd, 5th, etc.)
+        - Sum the digits at even positions (2nd, 4th, 6th, etc.)
+        - Multiply the sum of odd digits by 3 and add it to the sum of even digits
+        - Subtract the total from the next highest multiple of 10
+        - The result should be equal to the check digit
+
+    Parameters:
+    - upc (str): The Universal Product Code to validate.
+
+    Returns:
+    bool: True if the UPC is valid, False otherwise.
+    """
+    if len(upc) != 12:
+        return False
+
+    odd_sum = 0
+    even_sum = 0
+    for i in range(0, 11):
+        if i % 2 == 0:
+            odd_sum += int(upc[i])
+        else:
+            even_sum += int(upc[i])
+
+    total = (odd_sum * 3) + even_sum
+    check_digit = (10 - (total % 10)) % 10
+
+    return check_digit == int(upc[11])
