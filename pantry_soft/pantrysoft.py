@@ -42,18 +42,18 @@ class PantrySoft:
         # Get the cookies by logging in
         driver = PantrySoftDriver(self.url, username, password)
         php_session = driver.get_php_session()
-        php_session_expiry = driver.get_php_session_expiry()
-        driver.driver.quit()
-
-        # Cache the cookie for future use
-        cookies_dict = {
-            "user": username,
-            "PHPSESSID": php_session,
-            "expiry": php_session_expiry,
-        }
-
-        with open("cookies.json", "w") as f:
-            f.write(json.dumps(cookies_dict))
+        # php_session_expiry = driver.get_php_session_expiry()
+        # driver.driver.quit()
+        #
+        # # Cache the cookie for future use
+        # cookies_dict = {
+        #     "user": username,
+        #     "PHPSESSID": php_session,
+        #     "expiry": php_session_expiry,
+        # }
+        #
+        # with open("cookies.json", "w") as f:
+        #     f.write(json.dumps(cookies_dict))
 
         return {"PHPSESSID": php_session}
 
@@ -83,7 +83,7 @@ class PantrySoft:
         )
         return response.json()
 
-    @cache
+    # @cache
     def _get_all_items_json_cached(self, last_item_changed: float) -> dict:
         """Return the JSON response for all items."""
         return self._get_json("inventoryitem")

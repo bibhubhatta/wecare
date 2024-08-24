@@ -13,6 +13,8 @@ from inventory.item import Item
 class PantrySoftDriver:
     """Web driver for PantrySoft."""
 
+    _instance = None
+
     def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoftDriver object."""
         self.driver = self.__get_driver(url, username, password)
@@ -26,32 +28,34 @@ class PantrySoftDriver:
         expiry = self.driver.get_cookie("PHPSESSID")["expiry"]
         return expiry
 
-    @staticmethod
-    def __get_driver(url: str, username: str, password: str) -> webdriver.Chrome:
+    @classmethod
+    def __get_driver(cls, url: str, username: str, password: str) -> webdriver.Chrome:
         """Return a Selenium WebDriver."""
-        # Start the web driver headless
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
+        if cls._instance is None:
+            options = webdriver.ChromeOptions()
+            # options.add_argument("--headless")
 
-        driver = webdriver.Chrome(options=options)
-        driver.get(url)
+            driver = webdriver.Chrome(options=options)
+            driver.get(url)
 
-        driver.find_element(By.ID, "username").send_keys(username)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.ID, "index_login_btn").click()
+            driver.find_element(By.ID, "username").send_keys(username)
+            driver.find_element(By.ID, "password").send_keys(password)
+            driver.find_element(By.ID, "index_login_btn").click()
 
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//a[@href='/inventoryitem/']")
+            try:
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "//a[@href='/inventoryitem/']")
+                    )
                 )
-            )
-        except TimeoutException:
-            print("Timed out waiting for page to load.")
-            driver.quit()
-            raise
+            except TimeoutException:
+                print("Timed out waiting for page to load.")
+                driver.quit()
+                raise
 
-        return driver
+            cls._instance = driver
+
+        return cls._instance
 
     def add_item(self, item: Item):
         """Add an item to the pantry."""
@@ -98,3 +102,4 @@ class PantrySoftDriver:
     def close(self):
         """Close the web driver."""
         self.driver.quit()
+        PantrySoftDriver._instance = None
