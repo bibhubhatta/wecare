@@ -65,7 +65,14 @@ class TestPantrySoftApi:
         assert returned_item.description == test_item.description
 
     def test_api_updates_item(self):
-        test_item = self.one_piece
+        test_item = Item(
+            upc="77777777777",
+            name="Test Item 7 -- Will be deleted",
+            category="Test Category 7",
+            unit="",  # Unit is not implemented yet
+            size=77.77,
+            description="This is a test item and will be deleted.",
+        )
 
         self.api.create_item(test_item)
         updated_item = copy.deepcopy(test_item)
@@ -88,7 +95,14 @@ class TestPantrySoftApi:
         assert returned_item.description == updated_item.description
 
     def test_api_deletes_item(self):
-        test_item = self.one_piece
+        test_item = Item(
+            upc="66666666666",
+            name="Test Item 6 -- Will be deleted",
+            category="Test Category 6",
+            unit="",  # Unit is not implemented yet
+            size=66.66,
+            description="This is a test item and will be deleted.",
+        )
 
         self.api.create_item(test_item)
         returned_item = self.api.read_item(test_item.upc)
@@ -101,7 +115,14 @@ class TestPantrySoftApi:
             self.api.read_item(test_item.upc)
 
     def test_api_duplicate_item(self):
-        test_item = self.one_piece
+        test_item = Item(
+            upc="55555555555",
+            name="Test Item 5 -- Will be deleted",
+            category="Test Category 5",
+            unit="",  # Unit is not implemented yet
+            size=55.55,
+            description="This is a test item and will be deleted.",
+        )
 
         self.api.create_item(test_item)
         with pytest.raises(ValueError):
@@ -110,7 +131,14 @@ class TestPantrySoftApi:
         self.api.delete_item_category(test_item.category)
 
     def test_image_upload(self):
-        test_item = self.one_piece
+        test_item = Item(
+            upc="44444444444",
+            name="Test Item 4 -- Will be deleted",
+            category="Test Category 4",
+            unit="",  # Unit is not implemented yet
+            size=44.44,
+            description="This is a test item and will be deleted.",
+        )
 
         self.api.create_item(test_item)
         self.api.add_item_image(test_item.upc, open("meat.jpg", "rb").read())
