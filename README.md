@@ -1,1 +1,7 @@
-# csi-food_pantry-python
+# WeCare Repository
+
+The WeCare program at Ramapo College of New Jersey is an umbrella program that includes the Laptop Upcycle Program, the Food Pantry, and the Clothing Closet. The WeCare program is designed to help students in need by providing them with resources that they may not have access to. While working for the Laptop Upcycle Program, I noticed many inefficiencies and tedious tasks that could be automated. This repository contains some of the code that I have written to help automate some of these tasks.
+
+## PantrySoft Wrapper
+
+The Food Pantry uses PantrySoft to manage inventory and track student visits. Some UX elements are not user-friendly and require multiple navigation steps to complete a task. One of the largest bottlenecks was adding new items to the inventory. The option to link barcode to the item was especially annoying because it involved navigating to a different page and searching for the item. Not only was the process time consuming, it was also difficult to verify which items were already in the system. To solve this issue, I wrote wrappers to interact with PantrySoft by examining the network requests made by the browser and using Selenium for web automation. In addition to adding new items and linking barcodes effortlessly, it also checks Shoprite to automatically retrieve the item's images, details, and nutritional information. This is exposed to the user through a command line interface and a Django web application.
