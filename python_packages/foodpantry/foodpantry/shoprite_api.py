@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import requests
 
-from inventory.item import Item, ItemApi
+from foodpantry.item import Item, ItemApi
 
 
 class ShopriteItemApi(ItemApi):

@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from requests import JSONDecodeError
 
-from pantry_soft.driver import PantrySoftDriver
+from pantrysoft.driver import PantrySoftDriver
 
 
 class PantrySoft:

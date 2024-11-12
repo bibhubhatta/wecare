@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from inventory.item import Item
+from foodpantry.item import Item
 
 
 class PantryApi(ABC):
