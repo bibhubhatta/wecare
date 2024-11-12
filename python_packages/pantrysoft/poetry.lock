@@ -256,22 +256,6 @@ files = [
 ]
 
 [[package]]
-name = "foodpantry"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = "^3.12"
-files = []
-develop = true
-
-[package.dependencies]
-requests = "^2.31.0"
-
-[package.source]
-type = "directory"
-url = "../foodpantry"
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -638,4 +622,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "40486ef05cdf5f550668e56ca868f22865bfda479945645365bca342795a444b"
+content-hash = "85a3bd75fc7e9e7b4fb67714751355ebf88972a5ff2e7201e66da37de2a97671"

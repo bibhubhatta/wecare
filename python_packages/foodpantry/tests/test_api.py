@@ -4,8 +4,8 @@ import os
 import pytest
 
 from foodpantry.item import Item
-from pantrysoft.api import PantrySoftApi
-from pantrysoft.credentials import (
+from foodpantry.pantrysoft_api import PantrySoftApi
+from pantrysoft import (
     PANTRYSOFT_URL,
     PANTRYSOFT_USERNAME,
     PANTRYSOFT_PASSWORD,

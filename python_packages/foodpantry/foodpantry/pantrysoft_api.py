@@ -1,7 +1,7 @@
 from foodpantry.item import Item
 from foodpantry.pantry import PantryApi
 
-from pantrysoft.pantrysoft import PantrySoft
+from pantrysoft import PantrySoft
 
 
 class PantrySoftApi(PantryApi):

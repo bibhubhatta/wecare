@@ -7,8 +7,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from foodpantry.item import Item
-
 
 class PantrySoftDriver:
     """Web driver for PantrySoft."""
@@ -53,18 +51,18 @@ class PantrySoftDriver:
 
         return driver
 
-    def add_item(self, item: Item):
+    def add_item(self, name: str, upc: str, size: float):
         """Add an item to the pantry."""
         self.driver.get("https://app.pantrysoft.com/inventoryitem/new")
         sleep(1)
 
-        self.__fill_input_field("pantrybundle_inventoryitem_name", item.name)
-        self.__fill_input_field("pantrybundle_inventoryitem_itemNumber", item.upc)
-        self.__fill_input_field("pantrybundle_inventoryitem_weight", str(item.size))
+        self.__fill_input_field("pantrybundle_inventoryitem_name", name)
+        self.__fill_input_field("pantrybundle_inventoryitem_itemNumber", upc)
+        self.__fill_input_field("pantrybundle_inventoryitem_weight", str(size))
 
         self.__submit("//button[@class='btn btn-default' and @type='submit']")
 
-    def link_code_to_item(self, item: Item):
+    def link_code_to_item(self, upc: str, name: str):
         """Links UPC code to an item."""
         self.driver.get("https://app.pantrysoft.com/inventory_code/")
         sleep(1)
@@ -75,10 +73,10 @@ class PantrySoftDriver:
         new_code_button.send_keys(Keys.ENTER)
         sleep(0.6)
 
-        self.__fill_input_field("pantrybundle_inventoryitemcode_codeNumber", item.upc)
+        self.__fill_input_field("pantrybundle_inventoryitemcode_codeNumber", upc)
 
         search_field = self.driver.find_element(By.CLASS_NAME, "vs__search")
-        search_field.send_keys(item.name)
+        search_field.send_keys(name)
         sleep(1)
         search_field.send_keys(Keys.ENTER)
 

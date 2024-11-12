@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 requests = "^2.31.0"
+pantrysoft = {path = "../pantrysoft", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
