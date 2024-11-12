@@ -1,7 +1,7 @@
-from inventory.item import Item
-from inventory.pantry import PantryApi
+from foodpantry.item import Item
+from foodpantry.pantry import PantryApi
 
-from pantry_soft.pantrysoft import PantrySoft
+from pantrysoft.pantrysoft import PantrySoft
 
 
 class PantrySoftApi(PantryApi):

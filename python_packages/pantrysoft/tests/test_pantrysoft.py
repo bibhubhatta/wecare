@@ -1,9 +1,9 @@
-from pantry_soft.credentials import (
+from pantrysoft.credentials import (
     PANTRYSOFT_URL,
     PANTRYSOFT_USERNAME,
     PANTRYSOFT_PASSWORD,
 )
-from pantry_soft.pantrysoft import PantrySoft
+from pantrysoft.pantrysoft import PantrySoft
 
 
 def main():

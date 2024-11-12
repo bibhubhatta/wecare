@@ -1,10 +1,11 @@
 import copy
+import os
 
 import pytest
 
-from inventory.item import Item
-from pantry_soft.api import PantrySoftApi
-from pantry_soft.credentials import (
+from foodpantry.item import Item
+from pantrysoft.api import PantrySoftApi
+from pantrysoft.credentials import (
     PANTRYSOFT_URL,
     PANTRYSOFT_USERNAME,
     PANTRYSOFT_PASSWORD,
@@ -141,7 +142,8 @@ class TestPantrySoftApi:
         )
 
         self.api.create_item(test_item)
-        self.api.add_item_image(test_item.upc, open("meat.jpg", "rb").read())
+        image_path = os.path.join(os.path.dirname(__file__), "meat.jpg")
+        self.api.add_item_image(test_item.upc, open(image_path, "rb").read())
         self.api.delete_item(test_item.upc)
 
     def test_api_creates_category(self):
