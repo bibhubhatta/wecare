@@ -1,5 +1,7 @@
-from inventory.item import Item
-from inventory.shoprite_api import ShopriteItemApi
+import os
+
+from foodpantry.item import Item
+from foodpantry.shoprite_api import ShopriteItemApi
 
 test_item = Item(
     upc="070275000098",
@@ -26,4 +28,6 @@ def test_gets_item():
 def test_gets_image():
     api = ShopriteItemApi()
     image = api.get_image(test_item.upc)
-    assert image == open("test_image_whink_rust_stain_remover.jpg", "rb").read()
+    image_dir = os.path.dirname(os.path.realpath(__file__))
+    image_path = os.path.join(image_dir, "test_image_whink_rust_stain_remover.jpg")
+    assert image == open(image_path, "rb").read()
