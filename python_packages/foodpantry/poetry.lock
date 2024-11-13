@@ -390,13 +390,27 @@ develop = true
 
 [package.dependencies]
 beautifulsoup4 = "^4.12.3"
-python-dotenv = "^1.0.1"
 requests = "^2.32.3"
-selenium = "^4.26.1"
 
 [package.source]
 type = "directory"
 url = "../pantrysoft"
+
+[[package]]
+name = "pantrysoft-authenticator"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.12"
+files = []
+develop = true
+
+[package.dependencies]
+selenium = "^4.26.1"
+
+[package.source]
+type = "directory"
+url = "../pantrysoft_authenticator"
 
 [[package]]
 name = "pluggy"
@@ -641,4 +655,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1ba4ae422e3e1cb98086a93fc4f92c457b9c488be905b76d2a19372a54454c20"
+content-hash = "d9751d1afad173120caa88b9fd445e43b45c5137703ddc0ae2a82b466954a517"

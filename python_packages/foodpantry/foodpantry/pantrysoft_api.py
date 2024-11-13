@@ -2,6 +2,7 @@ from foodpantry.item import Item
 from foodpantry.pantry import PantryApi
 
 from pantrysoft import PantrySoft
+from pantrysoft_authenticator import get_php_session_id
 
 
 class PantrySoftApi(PantryApi):
@@ -9,7 +10,9 @@ class PantrySoftApi(PantryApi):
 
     def __init__(self, url: str, username: str, password: str):
         """Initialize a PantrySoftApi object."""
-        self.__pantry_soft = PantrySoft(url, username, password)
+
+        php_session_id = get_php_session_id(username, password)
+        self.__pantry_soft = PantrySoft(php_session_id)
 
     def read_item(self, upc: str) -> Item:
         """

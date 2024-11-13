@@ -1,61 +1,25 @@
-import json
-import time
 from functools import cache
 
 import requests
+import time
 from bs4 import BeautifulSoup
 from requests import JSONDecodeError
 
-from pantrysoft.driver import PantrySoftDriver
+PANTRYSOFT_URL = "https://app.pantrysoft.com"
 
 
 class PantrySoft:
     """PantrySoft API for retrieving item data."""
 
-    def __init__(self, url: str, username: str, password: str):
-        """Initialize a PantrySoft object."""
-        self.url = url
+    def __init__(self, php_session_id):
+        """Initialize a PantrySoft object.
+        :param php_session_id:
+        """
 
-        self._cookies = self._get_cookies(username, password)
+        self._cookies = {"PHPSESSID": php_session_id}
         self._headers = self._get_default_headers()
 
         self.last_item_changed = time.time()
-
-    def _get_cookies(self, username: str, password: str) -> dict:
-        """
-        Returns the cookies for the PantrySoft API.
-
-        Cookies are retrieved by logging into the PantrySoft website and extracting the PHP session ID.
-        """
-
-        # Check if the cookie is cached
-        try:
-            with open("cookies.json", "r") as f:
-                cookies_dict = json.loads(f.read())
-
-            # Check if the cookies are still valid
-            if cookies_dict["expiry"] > time.time():
-                return {"PHPSESSID": cookies_dict["PHPSESSID"]}
-        except FileNotFoundError:
-            pass
-
-        # Get the cookies by logging in
-        driver = PantrySoftDriver(self.url, username, password)
-        php_session = driver.get_php_session()
-        php_session_expiry = driver.get_php_session_expiry()
-        driver.driver.quit()
-
-        # Cache the cookie for future use
-        cookies_dict = {
-            "user": username,
-            "PHPSESSID": php_session,
-            "expiry": php_session_expiry,
-        }
-
-        with open("cookies.json", "w") as f:
-            f.write(json.dumps(cookies_dict))
-
-        return {"PHPSESSID": php_session}
 
     @staticmethod
     def _get_default_headers() -> dict:
@@ -76,7 +40,7 @@ class PantrySoft:
         """Make a GET request to the PantrySoft API."""
         params = {"_": str(int(time.time() * 1000))}
         response = requests.get(
-            f"{self.url}/{endpoint}/{indexdata}",
+            f"{PANTRYSOFT_URL}/{endpoint}/{indexdata}",
             headers=self._headers,
             cookies=self._cookies,
             params=params,
@@ -125,7 +89,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitem/new",
+            f"{PANTRYSOFT_URL}/inventoryitem/new",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -163,7 +127,7 @@ class PantrySoft:
             "pantrybundle_inventoryitem[_token]": form_token,
         }
         requests.post(
-            f"{self.url}/inventoryitem/new",
+            f"{PANTRYSOFT_URL}/inventoryitem/new",
             headers=self._headers,
             cookies=self._cookies,
             data=data,
@@ -193,7 +157,7 @@ class PantrySoft:
 
         # Get the edit page for the item
         response = requests.get(
-            f"{self.url}/inventoryitem/{item_id}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitem/{item_id}/edit",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -226,7 +190,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitem/{item['id']}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitem/{item['id']}/edit",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -257,7 +221,7 @@ class PantrySoft:
             "pantrybundle_inventoryitem[_token]": form_token,
         }
         requests.post(
-            f"{self.url}/inventoryitem/{item['id']}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitem/{item['id']}/edit",
             headers=self._headers,
             cookies=self._cookies,
             data=data,
@@ -278,7 +242,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventory_code/new",
+            f"{PANTRYSOFT_URL}/inventory_code/new",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -294,7 +258,7 @@ class PantrySoft:
             "pantrybundle_inventoryitemcode[_token]": (None, form_token),
         }
         response = requests.post(
-            f"{self.url}/inventory_code/new",
+            f"{PANTRYSOFT_URL}/inventory_code/new",
             headers=self._headers,
             cookies=self._cookies,
             files=files,
@@ -318,7 +282,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitem/",
+            f"{PANTRYSOFT_URL}/inventoryitem/",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -328,7 +292,7 @@ class PantrySoft:
         # Send the delete request
         data = {"_method": "DELETE", "csrfToken": csrf_token}
         requests.post(
-            f"{self.url}/inventoryitem/delete/{item_id}",
+            f"{PANTRYSOFT_URL}/inventoryitem/delete/{item_id}",
             headers=self._headers,
             cookies=self._cookies,
             data=data,
@@ -357,7 +321,7 @@ class PantrySoft:
         }
 
         response = requests.post(
-            f"{self.url}/media/upload/image",
+            f"{PANTRYSOFT_URL}/media/upload/image",
             cookies=self._cookies,
             headers=self._headers,
             files=files,
@@ -380,7 +344,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitem/{item['id']}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitem/{item['id']}/edit",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -393,8 +357,8 @@ class PantrySoft:
         # Send the update request
         headers = self._headers.copy()
         headers["content-type"] = "application/x-www-form-urlencoded"
-        headers["origin"] = self.url
-        headers["referer"] = f"{self.url}/inventoryitem/{item['id']}/edit"
+        headers["origin"] = PANTRYSOFT_URL
+        headers["referer"] = f"{PANTRYSOFT_URL}/inventoryitem/{item['id']}/edit"
 
         image_id = self._upload_image(image)
 
@@ -422,7 +386,7 @@ class PantrySoft:
         }
 
         requests.post(
-            f"{self.url}/inventoryitem/{item['id']}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitem/{item['id']}/edit",
             cookies=self._cookies,
             headers=headers,
             data=data,
@@ -433,7 +397,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitemtype/new",
+            f"{PANTRYSOFT_URL}/inventoryitemtype/new",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -458,7 +422,7 @@ class PantrySoft:
         }
 
         requests.post(
-            f"{self.url}/inventoryitemtype/new",
+            f"{PANTRYSOFT_URL}/inventoryitemtype/new",
             headers=self._headers,
             cookies=self._cookies,
             data=data,
@@ -479,7 +443,7 @@ class PantrySoft:
 
         # Get the CSRF token
         response = requests.get(
-            f"{self.url}/inventoryitemtype/{item_type_id}/edit",
+            f"{PANTRYSOFT_URL}/inventoryitemtype/{item_type_id}/edit",
             headers=self._headers,
             cookies=self._cookies,
         )
@@ -490,7 +454,7 @@ class PantrySoft:
         data = {"_method": "DELETE", "csrfToken": csrf_token}
 
         requests.post(
-            f"{self.url}/inventoryitemtype/delete/{item_type_id}",
+            f"{PANTRYSOFT_URL}/inventoryitemtype/delete/{item_type_id}",
             headers=self._headers,
             cookies=self._cookies,
             data=data,
