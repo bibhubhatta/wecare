@@ -14,8 +14,7 @@ def main():
     for client in clients:
         print(client)
 
-
-    save_to_csv(clients, "clients.csv")
+    save_to_csv(clients, "export/clients.csv")
 
 
 def save_to_csv(data: list[dict[str, Any]], csv_file_path: str):
@@ -41,6 +40,7 @@ def save_to_csv(data: list[dict[str, Any]], csv_file_path: str):
     header = sorted(list(header))  # Sort for consistent column order
 
     try:
+        os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
         with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=header)
             writer.writeheader()
