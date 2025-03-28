@@ -166,3 +166,6 @@ cython_debug/
 
 # Cached keys and tokens
 /session_id.txt
+
+# Exports
+export/
