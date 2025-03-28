@@ -29,8 +29,8 @@ def save_to_csv(data: list[dict[str, Any]], csv_file_path: str):
         return
 
     flattened_data = [
-        flatten_dict(item["0"]) for item in data
-    ]  # Flatten each dictionary in the list. added ['0']
+        flatten_dict(item) for item in data
+    ]  # Flatten each dictionary in the list
 
     # Get all unique headers from the flattened dictionaries.
     header = set()
