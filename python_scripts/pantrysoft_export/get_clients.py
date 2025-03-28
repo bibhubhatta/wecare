@@ -1,8 +1,10 @@
 from typing import Any
 
 import requests
+from joblib import Memory
 
 
+@Memory("cache", verbose=0).cache
 def get_clients(php_session_id: str) -> list[dict[str, Any]]:
     url = "https://app.pantrysoft.com/client/client_index_data"
 

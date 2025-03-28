@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "dotenv>=0.9.9",
+    "joblib>=1.4.2",
     "pantrysoft-authenticator",
     "requests>=2.32.3",
 ]
