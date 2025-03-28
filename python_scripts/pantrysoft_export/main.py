@@ -11,9 +11,11 @@ def main():
     session_id = get_session_id()
 
     clients = get_clients(session_id)
-    save_to_csv(clients, "clients.csv")
+    for client in clients:
+        print(client)
 
-    print(clients)
+
+    save_to_csv(clients, "clients.csv")
 
 
 def save_to_csv(data: list[dict[str, Any]], csv_file_path: str):
