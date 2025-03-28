@@ -1,15 +1,20 @@
+from typing import Any
+
 import requests
 
-def get_clients(php_session_id: str) -> dict[str, str]:
 
-    url = "https://app.pantrysoft.com/client/client_index_data?specFilter=client"
+def get_clients(php_session_id: str) -> list[dict[str, Any]]:
+    url = "https://app.pantrysoft.com/client/client_index_data"
 
-    payload = "draw=2&columns%5B0%5D%5Bdata%5D=clientId&columns%5B0%5D%5Bname%5D=clientId&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=locationName&columns%5B1%5D%5Bname%5D=locationName&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=deliveryRoute&columns%5B2%5D%5Bname%5D=deliveryRoute&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=locationCounty&columns%5B3%5D%5Bname%5D=locationCounty&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=accountNumber&columns%5B4%5D%5Bname%5D=accountNumber&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=businessName&columns%5B5%5D%5Bname%5D=businessName&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=firstName&columns%5B6%5D%5Bname%5D=firstName&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=lastName&columns%5B7%5D%5Bname%5D=lastName&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=birthday&columns%5B8%5D%5Bname%5D=birthday&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=status&columns%5B9%5D%5Bname%5D=status&columns%5B9%5D%5Bsearchable%5D=true&columns%5B9%5D%5Borderable%5D=true&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=streetAddress&columns%5B10%5D%5Bname%5D=streetAddress&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=true&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B11%5D%5Bdata%5D=unitNo&columns%5B11%5D%5Bname%5D=unitNo&columns%5B11%5D%5Bsearchable%5D=true&columns%5B11%5D%5Borderable%5D=true&columns%5B11%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B11%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B12%5D%5Bdata%5D=phoneNumber&columns%5B12%5D%5Bname%5D=phoneNumber&columns%5B12%5D%5Bsearchable%5D=true&columns%5B12%5D%5Borderable%5D=true&columns%5B12%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B12%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=7&order%5B0%5D%5Bdir%5D=asc&start=0&length=100&search%5Bvalue%5D=&search%5Bregex%5D=false"
+    cookies = {
+        "PHPSESSID": f"{php_session_id}",
+    }
+
     headers = {
         "accept": "application/json, text/javascript, */*; q=0.01",
         "accept-language": "en-US,en;q=0.9",
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "cookie": f"PHPSESSID={php_session_id}",
+        # 'cookie': '',
         "origin": "https://app.pantrysoft.com",
         "priority": "u=1, i",
         "referer": "https://app.pantrysoft.com/client/",
@@ -23,10 +28,120 @@ def get_clients(php_session_id: str) -> dict[str, str]:
         "x-requested-with": "XMLHttpRequest",
     }
 
-    response = requests.request("POST",
-                                url,
-                                headers=headers,
-                                data=payload
-                                )
+    params = {
+        "specFilter": "client",
+    }
 
-    return response.json()
+    data = {
+        "draw": "2",
+        "columns[0][data]": "clientId",
+        "columns[0][name]": "clientId",
+        "columns[0][searchable]": "true",
+        "columns[0][orderable]": "true",
+        "columns[0][search][value]": "",
+        "columns[0][search][regex]": "false",
+        "columns[1][data]": "locationName",
+        "columns[1][name]": "locationName",
+        "columns[1][searchable]": "true",
+        "columns[1][orderable]": "true",
+        "columns[1][search][value]": "",
+        "columns[1][search][regex]": "false",
+        "columns[2][data]": "deliveryRoute",
+        "columns[2][name]": "deliveryRoute",
+        "columns[2][searchable]": "true",
+        "columns[2][orderable]": "true",
+        "columns[2][search][value]": "",
+        "columns[2][search][regex]": "false",
+        "columns[3][data]": "locationCounty",
+        "columns[3][name]": "locationCounty",
+        "columns[3][searchable]": "true",
+        "columns[3][orderable]": "true",
+        "columns[3][search][value]": "",
+        "columns[3][search][regex]": "false",
+        "columns[4][data]": "accountNumber",
+        "columns[4][name]": "accountNumber",
+        "columns[4][searchable]": "true",
+        "columns[4][orderable]": "true",
+        "columns[4][search][value]": "",
+        "columns[4][search][regex]": "false",
+        "columns[5][data]": "businessName",
+        "columns[5][name]": "businessName",
+        "columns[5][searchable]": "true",
+        "columns[5][orderable]": "true",
+        "columns[5][search][value]": "",
+        "columns[5][search][regex]": "false",
+        "columns[6][data]": "firstName",
+        "columns[6][name]": "firstName",
+        "columns[6][searchable]": "true",
+        "columns[6][orderable]": "true",
+        "columns[6][search][value]": "",
+        "columns[6][search][regex]": "false",
+        "columns[7][data]": "lastName",
+        "columns[7][name]": "lastName",
+        "columns[7][searchable]": "true",
+        "columns[7][orderable]": "true",
+        "columns[7][search][value]": "",
+        "columns[7][search][regex]": "false",
+        "columns[8][data]": "birthday",
+        "columns[8][name]": "birthday",
+        "columns[8][searchable]": "true",
+        "columns[8][orderable]": "true",
+        "columns[8][search][value]": "",
+        "columns[8][search][regex]": "false",
+        "columns[9][data]": "status",
+        "columns[9][name]": "status",
+        "columns[9][searchable]": "true",
+        "columns[9][orderable]": "true",
+        "columns[9][search][value]": "",
+        "columns[9][search][regex]": "false",
+        "columns[10][data]": "streetAddress",
+        "columns[10][name]": "streetAddress",
+        "columns[10][searchable]": "true",
+        "columns[10][orderable]": "true",
+        "columns[10][search][value]": "",
+        "columns[10][search][regex]": "false",
+        "columns[11][data]": "unitNo",
+        "columns[11][name]": "unitNo",
+        "columns[11][searchable]": "true",
+        "columns[11][orderable]": "true",
+        "columns[11][search][value]": "",
+        "columns[11][search][regex]": "false",
+        "columns[12][data]": "phoneNumber",
+        "columns[12][name]": "phoneNumber",
+        "columns[12][searchable]": "true",
+        "columns[12][orderable]": "true",
+        "columns[12][search][value]": "",
+        "columns[12][search][regex]": "false",
+        "order[0][column]": "7",
+        "order[0][dir]": "asc",
+        "start": "0",
+        "length": "100",
+        "search[value]": "",
+        "search[regex]": "false",
+    }
+
+    clients = []
+
+    while True:
+        # Make the request
+        response = requests.post(
+            url=url,
+            params=params,
+            cookies=cookies,
+            headers=headers,
+            data=data,
+        )
+
+        # Parse the response
+        json_response = response.json()
+        clients.extend(json_response["data"])
+
+        # Check if there are more pages
+        if json_response["recordsFiltered"] <= len(clients):
+            break
+
+        # Update the start parameter for the next request
+        data["start"] = len(clients)
+        data["length"] = "100"
+
+    return clients
