@@ -146,4 +146,4 @@ def get_clients(php_session_id: str) -> list[dict[str, Any]]:
         data["start"] = len(clients)
         data["length"] = "100"
 
-    return clients
+    return [client["0"] for client in clients]
