@@ -2,25 +2,47 @@ import csv
 import os
 from typing import Any
 
+import sqlalchemy
 from dotenv import load_dotenv
 from get_client_html_file import get_client_dashboard_html_page
-from get_clients import get_clients
+from get_clients import get_client_list
 from joblib import Memory
 from pantrysoft_authenticator import get_php_session_id
+from wrappers import ClientDashboard, ClientDashboardRepositorySql, ClientRepositorySql
 
 
 def main():
     session_id = get_session_id()
+    sqlite_engine = sqlalchemy.create_engine("sqlite:///export/pantrysoft.db")
+    client_repo = ClientRepositorySql(sqlite_engine)
+    client_dashboard_repo = ClientDashboardRepositorySql(sqlite_engine)
 
-    clients = get_clients(session_id)
-    save_to_csv(clients, "export/clients.csv")
+    # Get clients from Pantrysoft
+    clients = get_client_list(session_id)
 
     for client in clients:
-        client_id = client["id"]
-        print(f"Exporting client number {client_id}'s dashboard...")
-        # Get the HTML for each client
-        html = get_client_dashboard_html_page(client_id, session_id)
-        save_html_file(html, f"export/html/client_dashboard_{client_id:03d}.html")
+        if client in client_repo and client_repo.get(client.id) is not None:
+            print(f"Client {client.id} already exists in the database.")
+        else:
+            print(f"Client {client.id} does not exist in the database. Saving...")
+            client_repo.save(client)
+
+        if (
+            client.id in client_dashboard_repo
+            and client_dashboard_repo.get(client.id) is not None
+        ):
+            print(f"Client dashboard {client.id} already exists in the database.")
+        else:
+            print(
+                f"Client {client.id} does not exist in the dashboard database. Saving..."
+            )
+            client_dashboard_html = get_client_dashboard_html_page(
+                client.id, session_id
+            )
+            client_dashboard = ClientDashboard(client_dashboard_html)
+            client_dashboard_repo.save(client_dashboard)
+
+    print("All clients and dashboards have been saved to the database.")
 
 
 @Memory(".cache", verbose=0).cache
