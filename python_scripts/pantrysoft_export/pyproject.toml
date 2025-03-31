@@ -9,6 +9,7 @@ dependencies = [
     "joblib>=1.4.2",
     "pantrysoft-authenticator",
     "requests>=2.32.3",
+    "sqlalchemy>=2.0.40",
 ]
 
 [tool.uv.sources]
