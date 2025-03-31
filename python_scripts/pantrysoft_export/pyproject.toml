@@ -12,4 +12,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-pantrysoft-authenticator = { path = "../../python_packages/pantrysoft_authenticator" }
+pantrysoft-authenticator = { path = "../../python_packages/pantrysoft_authenticator", editable = true }
