@@ -100,3 +100,10 @@ class ClientDashboardRepositorySql(ClientDashboardRepository):
                 dashboards.append(ClientDashboard(html=row.html))
 
             return dashboards
+
+    def __contains__(self, client_id: int) -> bool:
+        """Check if a client ID exists in the repository"""
+        with self.engine.connect() as conn:
+            stmt = select(self.table).where(self.table.c.client_id == client_id)
+            result = conn.execute(stmt).fetchone()
+            return result is not None

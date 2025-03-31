@@ -101,3 +101,10 @@ class ClientRepositorySql(ClientRepository):
                 clients.append(Client(client_dict=client_dict))
 
             return clients
+
+    def __contains__(self, client: Client) -> bool:
+        """Check if client exists in the database"""
+        with self.engine.connect() as conn:
+            stmt = select(self.table).where(self.table.c.id == client.id)
+            result = conn.execute(stmt).fetchone()
+            return result is not None
