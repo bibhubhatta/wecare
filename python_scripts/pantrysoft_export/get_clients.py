@@ -2,6 +2,15 @@ from typing import Any
 
 import requests
 from joblib import Memory
+from wrappers import Client
+
+
+def get_client_list(php_session_id: str) -> list[Client]:
+    """
+    Get a list of clients from Pantrysoft.
+    """
+    clients = get_clients(php_session_id)
+    return [Client(client_dict=client) for client in clients]
 
 
 @Memory(".cache", verbose=0).cache
