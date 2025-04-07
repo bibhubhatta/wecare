@@ -37,10 +37,25 @@ class ClientDashboard:
 
         return []
 
+    @property
+    def visit_ids(self) -> List[int]:
+        soup = BeautifulSoup(self.html, "html.parser")
+        visit_labels = soup.find_all(
+            "div", id=lambda x: x and x.startswith("visit_label_")
+        )
+        visit_ids = []
+        for label in visit_labels:
+            # Extract the visit ID from the div's id attribute
+            visit_id = label["id"].split("_")[-1]
+            visit_ids.append(int(visit_id))
+        return visit_ids
+
 
 class ClientDashboardRepository(Protocol):
     def save(self, dashboard: ClientDashboard) -> None: ...
+
     def get(self, client_id: int) -> Optional[ClientDashboard]: ...
+
     def get_all(self) -> List[ClientDashboard]: ...
 
 
