@@ -13,7 +13,8 @@ from sqlalchemy import (
     select,
 )
 
-from .client_dashboard import ClientDashboard, ClientDashboardRepository
+from . import ClientDashboardRepository
+from .client_dashboard import ClientDashboard
 
 
 class ClientDashboardRepositorySql(ClientDashboardRepository):

@@ -1,6 +1,8 @@
 from .client import Client, ClientRepository
 from .client_dashboard import (
     ClientDashboard,
+)
+from .client_dashboard_repository import (
     ClientDashboardRepository,
     ClientDashboardRepositoryInMemory,
 )
