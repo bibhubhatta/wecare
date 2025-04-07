@@ -8,6 +8,7 @@ from .client_dashboard_repository import (
 )
 from .client_dashboard_repository_sql import ClientDashboardRepositorySql
 from .client_repository_sql import ClientRepositorySql
+from .visit_edit_page import VisitEditPage
 
 __all__ = [
     "Client",
@@ -17,4 +18,5 @@ __all__ = [
     "ClientDashboardRepository",
     "ClientDashboardRepositoryInMemory",
     "ClientDashboardRepositorySql",
+    "VisitEditPage",
 ]
