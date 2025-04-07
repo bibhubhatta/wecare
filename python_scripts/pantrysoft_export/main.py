@@ -13,6 +13,12 @@ CLIENT_REPO = ClientRepositorySql(SQLITE_ENGINE)
 CLIENT_DASHBOARD_REPO = ClientDashboardRepositorySql(SQLITE_ENGINE)
 
 
+def main():
+    """Main function to prepare the database and export data to CSV."""
+    prepare_database()
+    export_to_csv()
+
+
 def export_to_csv():
     dashboards = CLIENT_DASHBOARD_REPO.get_all()
     client_vist_dates = []
@@ -86,5 +92,4 @@ def get_session_id() -> str:
 
 
 if __name__ == "__main__":
-    prepare_database()
-    export_to_csv()
+    main()
