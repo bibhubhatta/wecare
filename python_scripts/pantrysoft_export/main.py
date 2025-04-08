@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from get_client_html_file import get_client_dashboard_html_page
 from get_clients import get_client_list
 from get_edit_visit_html_page import get_edit_visit_page
+from get_items import get_items
 from pantrysoft_authenticator import get_php_session_id
 from utilities import get_from_env, save_to_csv
 from wrappers import (
@@ -23,10 +24,18 @@ VISIT_PAGE_REPO = VisitEditPageRepositorySql(SQLITE_ENGINE)
 
 def main():
     """Main function to prepare the database and export data to CSV."""
-    # save_clients()
-    # export_to_csv()
-    # save_visits()
+    save_clients()
+    export_to_csv()
+    save_visits()
     export_visits_to_csv()
+    save_items()
+
+
+def save_items():
+    session_id = get_session_id()
+    items = get_items(session_id)
+    save_to_csv(items, "export/items.csv")
+    print("Items saved to export/items.csv")
 
 
 def save_visits():
