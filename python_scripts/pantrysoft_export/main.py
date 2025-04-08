@@ -25,7 +25,8 @@ def main():
     """Main function to prepare the database and export data to CSV."""
     # save_clients()
     # export_to_csv()
-    save_visits()
+    # save_visits()
+    export_visits_to_csv()
 
 
 def save_visits():
@@ -48,6 +49,26 @@ def save_visits():
                 print(f"Visit {visit_id} saved to the database.")
 
     print("Done.")
+
+
+def export_visits_to_csv():
+    all_visit_pages = VISIT_PAGE_REPO.get_all()
+    visits = [visit_page.get_visit() for visit_page in all_visit_pages]
+
+    export_data = []
+    for visit in visits:
+        for visit_item in visit.visit_items:
+            export_data.append(
+                {
+                    "visit_id": visit.id,
+                    "visit_date_time": visit.visit_date_time,
+                    "client_id": visit.client_id,
+                    "item_id": visit_item.item_id,
+                    "item_quantity": visit_item.item_quantity,
+                    "comment": visit_item.comment,
+                }
+            )
+    save_to_csv(export_data, "export/visits.csv")
 
 
 def export_to_csv():
