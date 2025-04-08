@@ -23,7 +23,7 @@ VISIT_PAGE_REPO = VisitEditPageRepositorySql(SQLITE_ENGINE)
 
 def main():
     """Main function to prepare the database and export data to CSV."""
-    # prepare_database()
+    # save_clients()
     # export_to_csv()
     save_visits()
 
@@ -70,7 +70,7 @@ def export_to_csv():
     save_to_csv(client_data, "export/clients.csv")
 
 
-def prepare_database():
+def save_clients():
     session_id = get_session_id()
 
     # Get clients from Pantrysoft
