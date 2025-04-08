@@ -1,6 +1,7 @@
-def get_edit_visit_page(visit_id: int, session_id: str) -> str:
-    import requests
+import requests
 
+
+def get_edit_visit_page(visit_id: int, session_id: str) -> str:
     url = f"https://app.pantrysoft.com/visit/edit_visit_dialog/{visit_id}"
 
     cookies = {
