@@ -16,6 +16,19 @@ class VisitItem:
 
 
 @dataclass
+class Visit:
+    id: int
+    visit_date_time: datetime
+    visit_items: list[VisitItem]
+    client_id: int
+
+    def __post_init__(self):
+        assert self.id is not None, "Visit must have a valid id"
+        assert self.visit_date_time is not None, "Visit must have a valid date time"
+        assert self.visit_items is not None, "Visit must have valid items"
+
+
+@dataclass
 class VisitEditPage:
     html: str
 
@@ -99,3 +112,32 @@ class VisitEditPage:
             visit_items.append(visit_item)
 
         return visit_items
+
+    @property
+    def client_id(self) -> int:
+        """
+        Extract the client ID from the HTML.
+        """
+        soup = BeautifulSoup(self.html, "html.parser")
+        inventory_item_distributor = soup.find("inventory-item-distributor")
+
+        if not inventory_item_distributor:
+            return []
+
+        for attr in inventory_item_distributor.attrs:
+            if attr.lower().endswith(":client"):
+                json_str = inventory_item_distributor[attr]
+                decoded_str = html.unescape(json_str)
+                return json.loads(decoded_str).get("id")
+        raise ValueError("Client ID not found in the HTML")
+
+    def get_visit(self) -> Visit:
+        """
+        Returns a Visit object containing all the visit data.
+        """
+        return Visit(
+            id=self.visit_id,
+            visit_date_time=self.visit_date_time,
+            visit_items=self.visit_items,
+            client_id=self.client_id,
+        )
