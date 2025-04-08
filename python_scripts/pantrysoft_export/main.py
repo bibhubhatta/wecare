@@ -4,19 +4,50 @@ import sqlalchemy
 from dotenv import load_dotenv
 from get_client_html_file import get_client_dashboard_html_page
 from get_clients import get_client_list
+from get_edit_visit_html_page import get_edit_visit_page
 from pantrysoft_authenticator import get_php_session_id
 from utilities import get_from_env, save_to_csv
-from wrappers import ClientDashboard, ClientDashboardRepositorySql, ClientRepositorySql
+from wrappers import (
+    ClientDashboard,
+    ClientDashboardRepositorySql,
+    ClientRepositorySql,
+    VisitEditPage,
+    VisitEditPageRepositorySql,
+)
 
 SQLITE_ENGINE = sqlalchemy.create_engine("sqlite:///export/pantrysoft.db")
 CLIENT_REPO = ClientRepositorySql(SQLITE_ENGINE)
 CLIENT_DASHBOARD_REPO = ClientDashboardRepositorySql(SQLITE_ENGINE)
+VISIT_PAGE_REPO = VisitEditPageRepositorySql(SQLITE_ENGINE)
 
 
 def main():
     """Main function to prepare the database and export data to CSV."""
-    prepare_database()
-    export_to_csv()
+    # prepare_database()
+    # export_to_csv()
+    save_visits()
+
+
+def save_visits():
+    """Save visits to the database."""
+    session_id = get_session_id()
+
+    # Get clients from Pantrysoft
+    clients = CLIENT_DASHBOARD_REPO.get_all()
+
+    for client in clients:
+        visit_ids = client.visit_ids
+        for visit_id in visit_ids:
+            if visit_id in VISIT_PAGE_REPO:
+                print(f"Visit {visit_id} already exists in the database.")
+            else:
+                print(f"Visit {visit_id} does not exist in the database. Saving...")
+                visit_html = get_edit_visit_page(visit_id, session_id)
+                visit_page = VisitEditPage(visit_html)
+                VISIT_PAGE_REPO.save(visit_page)
+                print(f"Visit {visit_id} saved to the database.")
+
+    print("Done.")
 
 
 def export_to_csv():
