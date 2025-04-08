@@ -9,6 +9,11 @@ from .client_dashboard_repository import (
 from .client_dashboard_repository_sql import ClientDashboardRepositorySql
 from .client_repository_sql import ClientRepositorySql
 from .visit_edit_page import VisitEditPage
+from .visit_edit_page_repository import (
+    VisitEditPageRepository,
+    VisitEditPageRepositoryInMemory,
+)
+from .visit_edit_page_repository_sql import VisitEditPageRepositorySql
 
 __all__ = [
     "Client",
@@ -19,4 +24,7 @@ __all__ = [
     "ClientDashboardRepositoryInMemory",
     "ClientDashboardRepositorySql",
     "VisitEditPage",
+    "VisitEditPageRepository",
+    "VisitEditPageRepositoryInMemory",
+    "VisitEditPageRepositorySql",
 ]
