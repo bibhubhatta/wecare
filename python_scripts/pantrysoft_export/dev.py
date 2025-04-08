@@ -1,6 +1,6 @@
-from get_edit_visit_html_page import get_edit_visit_page
-from get_items import get_items
 from main import CLIENT_DASHBOARD_REPO, VISIT_PAGE_REPO, get_session_id
+from pantrysoft_getters.get_edit_visit_html_page import get_edit_visit_page
+from pantrysoft_getters.get_items import get_items
 from wrappers import VisitEditPage
 
 
