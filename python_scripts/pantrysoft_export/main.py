@@ -3,10 +3,12 @@ import os
 import sqlalchemy
 from dotenv import load_dotenv
 from pantrysoft_authenticator import get_php_session_id
-from pantrysoft_getters.get_client_html_file import get_client_dashboard_html_page
-from pantrysoft_getters.get_clients import get_client_list
-from pantrysoft_getters.get_edit_visit_html_page import get_edit_visit_page
-from pantrysoft_getters.get_items import get_items
+from pantrysoft_getters import (
+    get_client_dashboard_html_page,
+    get_client_list,
+    get_edit_visit_page,
+    get_items,
+)
 from utilities import get_from_env, save_to_csv
 from wrappers import (
     ClientDashboard,
