@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 
@@ -29,3 +30,13 @@ class VisitEditPage:
             return int(visit_id)
 
         raise ValueError("Visit ID not found in the HTML")
+
+    @property
+    def visit_date_time(self) -> datetime:
+        soup = BeautifulSoup(self.html, "html.parser")
+        date_time_input = soup.find("input", {"id": "pantrybundle_visit_visitDatetime"})
+        if date_time_input and "value" in date_time_input.attrs:
+            date_time_str = date_time_input["value"]
+            return datetime.strptime(date_time_str, "%m/%d/%Y %I:%M %p")
+
+        raise ValueError("Visit date time not found in the HTML")
